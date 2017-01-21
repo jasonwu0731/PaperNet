@@ -1,0 +1,56 @@
+{
+  "private": true,
+  "name": "blog-starter",
+  "version": "0.1.0",
+  "description": "Blog starter",
+  "license": "MIT",
+  "main": "server.js",
+  "scripts": {
+    "start": "babel-node server.js",
+    "lint": "eslint src server.js api.js webpack.confing.js"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.0",
+    "body-parser": "^1.15.2",
+    "cheerio": "^0.22.0",
+    "crawler": "^1.0.2",
+    "express": "^4.14.0",
+    "fs": "0.0.1-security",
+    "google-scholar": "^1.2.5",
+    "isomorphic-fetch": "^2.2.1",
+    "json-loader": "^0.5.4",
+    "mysql": "^2.12.0",
+    "net": "^1.0.2",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "react-quill": "^0.4.1",
+    "react-tagsinput": "^3.13.6",
+    "request": "^2.79.0",
+    "sequelize": "^3.27.0",
+    "sync-request": "^4.0.1",
+    "tls": "0.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-eslint": "^7.1.0",
+    "babel-loader": "^6.2.7",
+    "babel-plugin-transform-class-properties": "^6.18.0",
+    "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "babel-preset-latest": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "bcryptjs": "^2.4.0",
+    "css-loader": "^0.26.1",
+    "eslint": "^3.9.1",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.6.0",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.3",
+    "webpack-dev-middleware": "^1.8.4",
+    "webpack-hot-middleware": "^2.13.2"
+  }
+}
