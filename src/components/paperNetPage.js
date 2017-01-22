@@ -76,7 +76,30 @@ class PaperNetPage extends Component {
         depth: 3,
       });
     }
-    
+  }
+
+  handleStoreTree = () => {
+    const confirm = window.confirm('確定要新增樹嗎？');
+    if (confirm) {
+      let body = {
+        tree: this.state.tree,
+        userId: this.props.user.id,
+      }
+      fetch('/api/tree', {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify(body),
+      }).then(result => {
+        this.setState({
+          tree: {}
+        });
+        console.log(result);
+        window.location.href = '#/';
+      }).catch(err => console.log('POST failed!!'));
+    }
   }
   
   render() {
@@ -134,6 +157,7 @@ class PaperNetPage extends Component {
         <div className="row">
           <div className="col-md-12">
             <p><a className="btn btn-success btn-lg" role="button" onClick={this.handleTree}>Show Tree</a></p>
+            <p><a className="btn btn-success btn-lg" role="button" onClick={this.handleStoreTree}>Store Tree</a></p>
             {this.renderTree()}
           </div>
         </div>

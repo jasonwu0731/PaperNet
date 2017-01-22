@@ -1,15 +1,17 @@
 const request = require("request");
 const cheerio = require("cheerio");
 
-//const paperTitle = 'Mastering the game of Go with deep neural networks and tree search'
+const paperTitle = 'Mastering the game of Go with deep neural networks and tree search'
 //const paperTitle = 'Active Opening Book Application for Monte-carlo Tree Search in 19×19 Go'
 //const paperTitle = 'Deep learning via semi-supervised embedding'
-const paperTitle = 'Transductive Learning via Spectral Graph Partitioning'
+//const paperTitle = 'Transductive Learning via Spectral Graph Partitioning'
 const branchFactor = 3 // max = 10
-const depthFactor = 2  // max = 2
+const depthFactor = 1  // max = 2
 
 let paperURL = 'https://www.semanticscholar.org'
-let firstAuthor
+let firstAuthor 
+let authors = []
+let publisher = ''
 let tree = {}
 
 // https://www.semanticscholar.org/search?q=machine%20learning&sort=relevance&ae=false
@@ -43,6 +45,10 @@ request({
 			firstAuthor = $('.flex')[0].children[0].children[0].children[0].children[0].children[0].data
 		else
 			firstAuthor = $('.flex')[0].children[0].children[0].children[0].children[0].data
+
+		console.log( $(".venue-metadata") )
+		//console.log( $(".subhead") )
+
 		const paper = {author: firstAuthor, title: paperTitle, url: paperURL}
 		tree = {
 			author: firstAuthor,
@@ -118,37 +124,6 @@ request({
 									}
 								})
 							})
-							
-							/*
-							for(let i = 0; i < tree.children.length ; i ++ ){
-								let temp_child = tree.children[i]
-								//console.log('temp_child',temp_child)
-								_forward(temp_child, function(e, aa) {
-									if(!e) {
-										//console.log('aa.length',aa.length)
-										for (let ii = 0; ii< aa.length; ii++) {
-											tree.children[i].children.push(aa[ii])
-										} 
-										if (i == tree.children.length-1) {
-											for (let ii = 0; ii < tree.parent.length; ii++){
-												let temp_parent = tree.parent[ii]
-												//console.log(temp_parent)
-												_backward(temp_parent, function(e, bb){
-													if(!e){
-														for (let iii = 0; iii< bb.length; iii++) {
-															tree.parent[ii].parent.push(bb[iii])
-														}
-														if (ii == tree.parent.length-1) {
-															console.log(tree)
-															console.log(tree.parent.length-1, ii)
-														}
-													}
-												})
-											}
-										}
-									}
-								})
-							}*/
 						} 
 						else {
 							console.log(tree)
