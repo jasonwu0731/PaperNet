@@ -8,6 +8,7 @@ import SingleArticlePage from './SingleArticlePage';
 import CreateArticlePage from './CreateArticlePage';
 
 import PaperNetPage from './PaperNetPage';
+import TreesPage from './TreesPage';
 
 class App extends Component {
   state = {
@@ -41,9 +42,9 @@ class App extends Component {
         return <PaperNetPage user={this.state.user}/>;
       }
     
-      //if (this.state.route === '/articles') {
-      //  return <ArticlesPage user={this.state.user}/>;
-      //}
+      if (this.state.route === '/trees') {
+        return <TreesPage user={this.state.user}/>;
+      }
 
       //if (this.state.route === '/articles/new') {
       //  return <CreateArticlePage user={this.state.user}/>;
@@ -92,7 +93,7 @@ class App extends Component {
         <nav className="navbar navbar-default navbar-static-top">
           <div className="container">
             <div className="navbar-header">
-              <a className="navbar-brand" href="#/">Web Seminar - Blog</a>
+              <a className="navbar-brand" href="#/">PaperNet</a>
             </div>
             <ul className="nav navbar-nav">
               { this.state.user ? (

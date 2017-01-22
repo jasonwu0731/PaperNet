@@ -7,25 +7,9 @@ module.exports = {
         type: Sequelize.INTEGER,
         autoIncrement: true,
       },
-      title: {
+      tree: {
         allowNull: false,
-        type: Sequelize.TEXT,
-      },
-      author: {
-        allowNull: true,
-        type: Sequelize.TEXT,
-      },
-      url: {
-        allowNull: true,
-        type: Sequelize.TEXT,
-      },
-      children: {
-        allowNull: true,
-        type: Sequelize.ARRAY,
-      },
-      parent: {
-        allowNull: true,
-        type: Sequelize.ARRAY,
+        type: Sequelize.JSON,
       },
       userId: {
         allowNull: false,

@@ -1,9 +1,34 @@
 import { Router } from 'express';
+
+import models from '../models';
+
+const { Tree } = models;
+
 const request = require("request");
 const cheerio = require("cheerio");
-const util = require('util');
+
 
 const treeRouter = new Router();
+
+treeRouter.post('/', async(req, res) => {
+  const {userId, tree} = req.body;
+
+  const tree_userId = await Tree.create({
+    tree,
+    userId,
+  });
+
+  res.send(tree_userId)
+}) 
+
+treeRouter.get('/', async (req, res) => {
+  try {
+    let trees = await Tree.all();
+    res.send(trees);
+  } catch (err) {
+    console.log("GET ERROR: ", err)
+  }
+})
 
 treeRouter.post('/crawler', async (req, res) => {
   const { title, branch, depth } = req.body;
