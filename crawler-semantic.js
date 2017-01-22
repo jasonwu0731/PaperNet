@@ -6,10 +6,12 @@ const paperTitle = 'Mastering the game of Go with deep neural networks and tree 
 //const paperTitle = 'Deep learning via semi-supervised embedding'
 //const paperTitle = 'Transductive Learning via Spectral Graph Partitioning'
 const branchFactor = 3 // max = 10
-const depthFactor = 2  // max = 2
+const depthFactor = 1  // max = 2
 
 let paperURL = 'https://www.semanticscholar.org'
-let firstAuthor
+let firstAuthor 
+let authors = []
+let publisher = ''
 let tree = {}
 
 // https://www.semanticscholar.org/search?q=machine%20learning&sort=relevance&ae=false
@@ -43,6 +45,10 @@ request({
 			firstAuthor = $('.flex')[0].children[0].children[0].children[0].children[0].children[0].data
 		else
 			firstAuthor = $('.flex')[0].children[0].children[0].children[0].children[0].data
+
+		console.log( $(".venue-metadata") )
+		//console.log( $(".subhead") )
+
 		const paper = {author: firstAuthor, title: paperTitle, url: paperURL}
 		tree = {
 			author: firstAuthor,

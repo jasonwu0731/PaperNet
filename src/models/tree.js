@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       associate() {
 
       },
+      tableName: 'trees'
     },
   });
 
