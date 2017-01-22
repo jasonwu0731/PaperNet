@@ -5,15 +5,15 @@ const util = require('util');
 
 const treeRouter = new Router();
 
-treeRouter.post('/crawler', (req, res) => {
-  const { title } = req.body;
+treeRouter.post('/crawler', async (req, res) => {
+  const { title, branch, depth } = req.body;
 
   //console.log("Received User's Info!");
   console.log( "original information", title);
   
   const paperTitle = title
-  const branchFactor = 5 // max = 10
-  const depthFactor = 2  // max = 2
+  const branchFactor = branch 
+  const depthFactor = depth  
 
   let paperURL = 'https://www.semanticscholar.org'
   let firstAuthor
@@ -30,6 +30,11 @@ treeRouter.post('/crawler', (req, res) => {
     myURL += (arr[i]+"%20")
   }
   console.log(myURL)
+
+  let onComplete = function(tree, res){
+    console.log(tree)
+    res.send(tree)
+  }
 
   request({
     url: myURL,
@@ -65,34 +70,72 @@ treeRouter.post('/crawler', (req, res) => {
               //console.log(tree)
               
               if (depthFactor > 1) {
-                for(let i = 0; i < tree.children.length ; i ++ ){
-                  let temp_child = tree.children[i]
-                  //console.log('temp_child',temp_child)
-                  _forward(temp_child, branchFactor, function(e, aa) {
-                    if(!e) {
-                      //console.log('aa.length',aa.length)
-                      for (let ii = 0; ii< aa.length; ii++) {
-                        tree.children[i].children.push(aa[ii])
+                let tasks2go = tree.children.length
+                let tasks2go1 = tree.parent.length
+                let tasks2go2 = 0
+                let tasks2go3 = 0
+                tree.children.forEach(function(temp_child, index) {
+                  _forward(temp_child, branchFactor, function(e,aa){
+                    if(e) console.log(e)
+                    else {
+                      aa.forEach( function(item, index){
+                        temp_child.children.push(item)
+                        tasks2go2 += 1
+                      }) 
+                      tasks2go -= 1
+                      if (tasks2go == 0) {
+                        tree.parent.forEach(function(temp_parent,index){
+                          _backward(temp_parent, branchFactor, function(e,bb){
+                            if(e) console.log(e)
+                            else {
+                              bb.forEach(function(item, index){
+                                temp_parent.parent.push(item)
+                                tasks2go3 += 1
+                              })
+                              tasks2go1 -= 1
+                              if (tasks2go1 == 0) {
+                                if (depthFactor == 2) 
+                                  onComplete(tree, res)
+                                else {
+                                  tree.children.forEach(function(child1, index) {
+                                    child1.children.forEach(function(child2, index){
+                                      _forward(child2, branchFactor, function(e,aaa){
+                                        if(e) console.log(e)
+                                        else {
+                                          aaa.forEach(function(item,index){
+                                            child2.children.push(item)
+                                          })
+                                          tasks2go2 -= 1
+                                          if (tasks2go2 == 0) {
+                                            tree.parent.forEach(function(parent1, index){
+                                              parent1.parent.forEach(function(parent2, idnex){
+                                                _backward(parent2, branchFactor, function(e,bbb){
+                                                  bbb.forEach(function(item,index){
+                                                    parent2.parent.push(item)
+                                                  })
+                                                  tasks2go3 -= 1
+                                                  if(tasks2go3 == 0)
+                                                    onComplete(tree,res)
+                                                })
+                                              })
+                                            })
+                                          }
+                                        }
+                                      })
+                                    })
+                                  })
+                                }
+                              }
+                            }
+                          })
+                        })
                       }
-                      let temp_parent = tree.parent[i]
-                      _backward(temp_parent, branchFactor, function(e, bb){
-                        if(!e){
-                          for (let iii = 0; iii< bb.length; iii++) {
-                            tree.parent[i].parent.push(bb)
-                          }
-                          if (i == tree.children.length-1) {
-                            console.log(tree)
-                            res.send( tree );
-                          }
-                        }
-                      })
                     }
                   })
-                }
+                })
               } 
               else {
-                console.log(tree)
-                res.send(tree);
+                onComplete(tree,res)
               }
             }
           })

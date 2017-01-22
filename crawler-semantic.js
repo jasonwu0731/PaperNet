@@ -2,8 +2,10 @@ const request = require("request");
 const cheerio = require("cheerio");
 
 //const paperTitle = 'Mastering the game of Go with deep neural networks and tree search'
-const paperTitle = 'Active Opening Book Application for Monte-carlo Tree Search in 19×19 Go'
-const branchFactor = 5 // max = 10
+//const paperTitle = 'Active Opening Book Application for Monte-carlo Tree Search in 19×19 Go'
+//const paperTitle = 'Deep learning via semi-supervised embedding'
+const paperTitle = 'Transductive Learning via Spectral Graph Partitioning'
+const branchFactor = 3 // max = 10
 const depthFactor = 2  // max = 2
 
 let paperURL = 'https://www.semanticscholar.org'
@@ -35,7 +37,7 @@ request({
 		//console.log($('.result-page'))
 		paperRef = $('.search-result-title')[0].children[0].attribs.href
 		paperURL += paperRef
-		//console.log('paperURL: ', paperURL)
+		console.log('paperURL: ', paperURL)
 		//console.log($('.flex')[0].children[0].children[0].children[0].children[0])
 		if ($('.flex')[0].children[0].children[0].name == 'a')
 			firstAuthor = $('.flex')[0].children[0].children[0].children[0].children[0].children[0].data
@@ -87,28 +89,66 @@ request({
 						//console.log(tree)
 						
 						if (depthFactor > 1) {
+							let tasks2go = tree.children.length
+							tree.children.forEach(function(temp_child, index) {
+								_forward(temp_child, function(e,aa){
+									if(e) console.log(e)
+									else {
+										aa.forEach( function(item, index){
+											temp_child.children.push(item)
+										}) 
+										tasks2go -= 1
+										if (tasks2go == 0) {
+											let tasks2go1 = tree.parent.length
+											tree.parent.forEach(function(temp_parent,index){
+												_backward(temp_parent, function(e,bb){
+													if(e) console.log(e)
+													else {
+														bb.forEach(function(item, index){
+															temp_parent.parent.push(item)
+														})
+														tasks2go1 -= 1
+														if (tasks2go1 == 0) {
+															console.log(tree)
+														}
+													}
+												})
+											})
+										}
+									}
+								})
+							})
+							
+							/*
 							for(let i = 0; i < tree.children.length ; i ++ ){
-								temp_child = tree.children[i]
+								let temp_child = tree.children[i]
 								//console.log('temp_child',temp_child)
 								_forward(temp_child, function(e, aa) {
 									if(!e) {
 										//console.log('aa.length',aa.length)
 										for (let ii = 0; ii< aa.length; ii++) {
 											tree.children[i].children.push(aa[ii])
-										}
-										temp_parent = tree.parent[i]
-										_backward(temp_parent, function(e, bb){
-											if(!e){
-												for (let iii = 0; iii< bb.length; iii++) {
-													tree.parent[i].parent.push(bb)
-												}
-												if (i == tree.children.length-1)
-													console.log(tree)
+										} 
+										if (i == tree.children.length-1) {
+											for (let ii = 0; ii < tree.parent.length; ii++){
+												let temp_parent = tree.parent[ii]
+												//console.log(temp_parent)
+												_backward(temp_parent, function(e, bb){
+													if(!e){
+														for (let iii = 0; iii< bb.length; iii++) {
+															tree.parent[ii].parent.push(bb[iii])
+														}
+														if (ii == tree.parent.length-1) {
+															console.log(tree)
+															console.log(tree.parent.length-1, ii)
+														}
+													}
+												})
 											}
-										})
+										}
 									}
 								})
-							}
+							}*/
 						} 
 						else {
 							console.log(tree)
@@ -196,7 +236,7 @@ function _backward(paper, callback) {
 			let flag_ref = 0
 			let flag_cited = 0
 
-			//console.log('paper', paper.title)
+			console.log('paper', paper.title)
 			//console.log($(".sticky-nav__item__link"))
 			for (let i = 0 ; i < $(".sticky-nav__item__link").length; i++) {
 				//console.log($(".sticky-nav__item__link")[i].attribs.href)
@@ -205,6 +245,7 @@ function _backward(paper, callback) {
 				if ($(".sticky-nav__item__link")[i].attribs.href == '#citingPapers')
 					flag_cited = 1
 			}
+			console.log('flag_ref',flag_ref)
 			// Get Reference Papers
 			if (flag_ref == 1){
 				let refCount = 0
@@ -212,7 +253,7 @@ function _backward(paper, callback) {
 					if ($(".paper-detail-content-section")[0].children[i].name == 'article')
 						refCount += 1
 				}
-				//console.log(refCount)
+				console.log(refCount)
 				let update_bf = Math.min( refCount ,branchFactor)
 				for (let i = 0; i<update_bf; i++) {
 					let ref = {}

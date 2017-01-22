@@ -17,7 +17,7 @@ class PaperNetPage extends Component {
 
   handleTree = () => {
     //console.log(this.state.title)
-    let body = {title: this.state.title} //{title: 'Mastering the game of Go with deep neural networks and tree search'}
+    let body = {title: this.state.title, branch: this.state.branch, depth: this.state.depth} //{title: 'Mastering the game of Go with deep neural networks and tree search'}
     if (this.state.title == ''){
       window.alert("論文標題不可空白")
     } else {
@@ -67,13 +67,13 @@ class PaperNetPage extends Component {
   }
 
   handleDepthChange = e => {
-    if (e.target.value <= 2) {
+    if (e.target.value <= 3) {
       this.setState({
         depth: e.target.value,
       });
     } else {
       this.setState({
-        depth: 2,
+        depth: 3,
       });
     }
     
