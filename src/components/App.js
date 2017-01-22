@@ -9,6 +9,7 @@ import CreateArticlePage from './CreateArticlePage';
 
 import PaperNetPage from './PaperNetPage';
 import TreesPage from './TreesPage';
+import SingleTreePage from './SingleTreePage';
 
 class App extends Component {
   state = {
@@ -60,22 +61,22 @@ class App extends Component {
   }
 
   renderBreadcrumb() {
-    if (this.state.route === '/articles') {
+    if (this.state.route === '/trees') {
       return (
         <ol className="breadcrumb">
           <li><a href="#/">Home</a></li>
-          <li><a href="#/articles">Articles</a></li>
+          <li><a href="#/trees">Trees</a></li>
         </ol>
       );
     }
 
-    if (this.state.route.startsWith('/articles/')) {
-      const id = this.state.route.split('/articles/')[1];
+    if (this.state.route.startsWith('/trees/')) {
+      const id = this.state.route.split('/trees/')[1];
       return (
         <ol className="breadcrumb">
           <li><a href="#/">Home</a></li>
-          <li><a href="#/articles">Articles</a></li>
-          <li><a href={`#/articles/${id}`}>{id}</a></li>
+          <li><a href="#/trees">Trees</a></li>
+          <li><a href={`#/trees/${id}`}>{id}</a></li>
         </ol>
       );
     }

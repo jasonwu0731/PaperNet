@@ -30,6 +30,29 @@ treeRouter.get('/', async (req, res) => {
   }
 })
 
+treeRouter.get('/:id', async (req, res) => {
+  const id = req.params.id;
+  const tree = await Tree.findById(id);
+  //console.log('article in api :id', article);
+  res.json(tree);
+});
+
+treeRouter.delete('/:id', async (req, res) => {
+  const id = req.params.id;
+
+  console.log('Going to delete tree id: ', id)
+
+  await Tree.destroy({
+    where: {
+      id,
+    },
+  });
+  
+  res.json({
+    deletedId: +id,
+  });
+});
+
 treeRouter.post('/crawler', async (req, res) => {
   const { title, branch, depth } = req.body;
 
