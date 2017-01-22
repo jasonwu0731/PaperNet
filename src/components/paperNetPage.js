@@ -9,6 +9,7 @@ class PaperNetPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      tree:{},
       title: '',
       branch: 5,
       depth: 2,
@@ -139,7 +140,7 @@ class PaperNetPage extends Component {
       })
       .then( res => res.json() )
       .then( json => {
-        //this.setState({tree: json});
+        this.setState({tree: json});
         this.treeGetIndex(json);
         let uniqTitles = Array.from( new Set(this.state.uniqTitles));
         let myDic = {}
@@ -202,7 +203,31 @@ class PaperNetPage extends Component {
         depth: 3,
       });
     }
-    
+  }
+
+  handleStoreTree = () => {
+    if ( Object.keys(this.state.tree).length === 0 ) 
+      alert("NO TREE EXISTED!")
+    else {
+      const confirm = window.confirm('確定要新增樹嗎？');
+      if (confirm) {
+        let body = {
+          tree: this.state.tree,
+          userId: this.props.user.id,
+        }
+        fetch('/api/tree', {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify(body),
+        }).then(result => {
+          console.log(result);
+          window.location.href = '#/';
+        }).catch(err => console.log('POST failed!!'));
+      }
+    }
   }
   
   render() {
@@ -259,7 +284,10 @@ class PaperNetPage extends Component {
         </div>
         <div className="row">
           <div className="col-md-12">
-            <p><a className="btn btn-success btn-lg" role="button" onClick={this.handleTree}>Show Tree</a></p>
+            <p>
+            <a className="btn btn-success btn-lg" role="button" onClick={this.handleTree}>Show Tree</a>
+            <a className="btn btn-success btn-lg" role="button" onClick={this.handleStoreTree}>Store Tree</a>
+            </p>
             {this.renderTree()}
           </div>
         </div>

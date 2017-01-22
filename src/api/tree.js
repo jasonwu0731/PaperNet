@@ -134,6 +134,7 @@ treeRouter.post('/crawler', async (req, res) => {
                 let tasks2go1 = tree.parent.length
                 let tasks2go2 = 0
                 let tasks2go3 = 0
+                let tasks2go4 = 0
                 tree.children.forEach(function(temp_child, index) {
                   _forward(temp_child, branchFactor, function(e,aa){
                     if(e) console.log(e)
@@ -143,7 +144,7 @@ treeRouter.post('/crawler', async (req, res) => {
                         tasks2go2 += 1
                       }) 
                       tasks2go -= 1
-                      if (tasks2go == 0) {
+                      if (tasks2go <= 0) {
                         tree.parent.forEach(function(temp_parent,index){
                           _backward(temp_parent, branchFactor, function(e,bb){
                             if(e) console.log(e)
@@ -153,7 +154,7 @@ treeRouter.post('/crawler', async (req, res) => {
                                 tasks2go3 += 1
                               })
                               tasks2go1 -= 1
-                              if (tasks2go1 == 0) {
+                              if (tasks2go1 <= 0) {
                                 if (depthFactor == 2) 
                                   onComplete(tree, res)
                                 else {
@@ -166,19 +167,23 @@ treeRouter.post('/crawler', async (req, res) => {
                                             child2.children.push(item)
                                           })
                                           tasks2go2 -= 1
-                                          if (tasks2go2 == 0) {
-                                            tree.parent.forEach(function(parent1, index){
-                                              parent1.parent.forEach(function(parent2, idnex){
-                                                _backward(parent2, branchFactor, function(e,bbb){
-                                                  bbb.forEach(function(item,index){
-                                                    parent2.parent.push(item)
+                                          if (tasks2go2 <= 0) {
+                                            if (tasks2go3 == 0)
+                                              onComplete(tree, res)
+                                            else {
+                                              tree.parent.forEach(function(parent1, index){
+                                                parent1.parent.forEach(function(parent2, idnex){
+                                                  _backward(parent2, branchFactor, function(e,bbb){
+                                                    bbb.forEach(function(item,index){
+                                                      parent2.parent.push(item)
+                                                    })
+                                                    tasks2go3 -= 1
+                                                    if(tasks2go3 <= 0 )
+                                                      onComplete(tree,res)
                                                   })
-                                                  tasks2go3 -= 1
-                                                  if(tasks2go3 == 0)
-                                                    onComplete(tree,res)
                                                 })
                                               })
-                                            })
+                                            }
                                           }
                                         }
                                       })
@@ -209,6 +214,7 @@ treeRouter.post('/crawler', async (req, res) => {
 
 
 function _forward(paper, branchFactor,callback) {
+  console.log('forward',paper.title)
   let citedPaper = []
   const url_in = paper.url
   if (url_in == ''){
@@ -254,15 +260,15 @@ function _forward(paper, branchFactor,callback) {
             for (let i = 0 ; i< 6 ; i++) {
               if (uu.children[i].children[0].name == 'a')
                 authors_temp.push(uu.children[i].children[0].children[0].children[0].children[0].data)
-              else 
-                authors_temp.push(uu.children[i].children[0].children[0].children[0].data)
+              //else 
+              //  authors_temp.push(uu.children[i].children[0].children[0].children[0].data)
             }
           } else {
             uu.children.forEach(function(item, index){
               if (item.children[0].name == 'a')
                 authors_temp.push(item.children[0].children[0].children[0].children[0].data)
-              else 
-                authors_temp.push(item.children[0].children[0].children[0].data)
+              //else 
+              //  authors_temp.push(item.children[0].children[0].children[0].data)
             })
           }
           //console.log('authors',authors)
@@ -310,6 +316,7 @@ function _forward(paper, branchFactor,callback) {
 }
 
 function _backward(paper,branchFactor, callback) {
+  console.log('_backward',paper.title)
   let refPaper = []
   const url_in = paper.url
   if (url_in == ''){
@@ -351,15 +358,15 @@ function _backward(paper,branchFactor, callback) {
             for (let i = 0 ; i< 6 ; i++) {
               if (uu.children[i].children[0].name == 'a')
                 authors_temp.push(uu.children[i].children[0].children[0].children[0].children[0].data)
-              else 
-                authors_temp.push(uu.children[i].children[0].children[0].children[0].data)
+              //else 
+              //  authors_temp.push(uu.children[i].children[0].children[0].children[0].data)
             }
           } else {
             uu.children.forEach(function(item, index){
               if (item.children[0].name == 'a')
                 authors_temp.push(item.children[0].children[0].children[0].children[0].data)
-              else 
-                authors_temp.push(item.children[0].children[0].children[0].data)
+              //else 
+              //  authors_temp.push(item.children[0].children[0].children[0].data)
             })
           }
 
