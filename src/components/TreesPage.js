@@ -27,9 +27,9 @@ class TreesPage extends Component {
 
     return trees.filter(tree => (tree.userId === this.props.user.id)).map( tree => (
       <tr>
-        <td><a href={`#/articles/${tree.id}`} key={tree.id}>{JSON.parse(tree.tree).title}</a></td>
-        <td><a href={`#/articles/${tree.id}`} key={tree.id}>{JSON.parse(tree.tree).url}</a></td>
-        <th><a href={`#/articles/${tree.id}`} key={tree.id}>{tree.createdAt}</a></th>
+        <td><a href={`#/trees/${tree.id}`} key={tree.id}>{JSON.parse(tree.tree).title}</a></td>
+        <td><a href={`#/trees/${tree.id}`} key={tree.id}>{JSON.parse(tree.tree).url}</a></td>
+        <th><a href={`#/trees/${tree.id}`} key={tree.id}>{tree.createdAt}</a></th>
       </tr>
     ));
   }

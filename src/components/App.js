@@ -50,10 +50,10 @@ class App extends Component {
       //  return <CreateArticlePage user={this.state.user}/>;
       //}
 
-      //if (this.state.route.startsWith('/articles/')) {
-      //  const id = this.state.route.split('/articles/')[1];
-      //  return <SingleArticlePage id={id} user={this.state.user}/>;
-      //}
+      if (this.state.route.startsWith('/trees/')) {
+        const id = this.state.route.split('/trees/')[1];
+        return <SingleTreePage id={id} user={this.state.user}/>;
+      }
 
       return <HomePage user={this.state.user}/>;
     }
