@@ -5,15 +5,15 @@ const util = require('util');
 
 const treeRouter = new Router();
 
-treeRouter.post('/crawler', (req, res) => {
-  const { title } = req.body;
+treeRouter.post('/crawler', async (req, res) => {
+  const { title, branch, depth } = req.body;
 
   //console.log("Received User's Info!");
   console.log( "original information", title);
   
   const paperTitle = title
-  const branchFactor = 5 // max = 10
-  const depthFactor = 2  // max = 2
+  const branchFactor = branch 
+  const depthFactor = depth  
 
   let paperURL = 'https://www.semanticscholar.org'
   let firstAuthor
@@ -30,6 +30,11 @@ treeRouter.post('/crawler', (req, res) => {
     myURL += (arr[i]+"%20")
   }
   console.log(myURL)
+
+  let onComplete = function(tree, res){
+    console.log(tree)
+    res.send(tree)
+  }
 
   request({
     url: myURL,
@@ -65,30 +70,98 @@ treeRouter.post('/crawler', (req, res) => {
               //console.log(tree)
               
               if (depthFactor > 1) {
-                for(let i = 0; i < tree.children.length ; i ++ ){
+                let tasks2go = tree.children.length + tree.parent.length
+                tree.children.forEach(function(temp_child, index) {
+                  _forward(temp_child, branchFactor, function(e,aa){
+                    if(e) console.log(e)
+                    else {
+                      aa.forEach( function(item, index){
+                        temp_child.children.push(item)
+                      }) 
+                      tasks2go -= 1
+                      if (tasks2go == 0) {
+                        onComplete(tree, res)
+                      }
+                    }
+                  })
+                })
+                tree.parent.forEach(function(temp_parent,index){
+                  _backward(temp_parent, branchFactor, function(e,bb){
+                    if(e) console.log(e)
+                    else {
+                      bb.forEach(function(item, index){
+                        temp_parent.parent.push(item)
+                      })
+                      tasks2go -= 1
+                      if (tasks2go == 0) {
+                        onComplete(tree, res)
+                      }
+                    }
+                  })
+                })
+                /*for(let i = 0; i < tree.children.length ; i ++ ){
                   let temp_child = tree.children[i]
-                  //console.log('temp_child',temp_child)
                   _forward(temp_child, branchFactor, function(e, aa) {
                     if(!e) {
-                      //console.log('aa.length',aa.length)
                       for (let ii = 0; ii< aa.length; ii++) {
                         tree.children[i].children.push(aa[ii])
                       }
-                      let temp_parent = tree.parent[i]
-                      _backward(temp_parent, branchFactor, function(e, bb){
-                        if(!e){
-                          for (let iii = 0; iii< bb.length; iii++) {
-                            tree.parent[i].parent.push(bb)
-                          }
-                          if (i == tree.children.length-1) {
-                            console.log(tree)
-                            res.send( tree );
-                          }
+                      if (i == tree.children.length-1) {
+                        for (let ii = 0; ii < tree.parent.length; ii++){
+                          let temp_parent = tree.parent[ii]
+                          _backward(temp_parent, branchFactor, function(e, bb){
+                            if(!e){
+                              for (let iii = 0; iii< bb.length; iii++) {
+                                tree.parent[ii].parent.push(bb[iii])
+                              }
+                              if (ii == tree.parent.length-1){
+                                if (depthFactor > 2) {
+                                  res.send(tree)
+                                  for(let i2 = 0; i2 < tree.children.length ; i2 ++ ){
+                                    for (let ii2 = 0; ii2 < tree.children[i2].children.length; ii2++){
+                                      let temp_child = tree.children[i2].children[ii2]
+                                      _forward(temp_child, branchFactor, function(e, aaa) {
+                                        if(!e) {
+                                          aaa.forEach( function(item, index) {
+                                            tree.children[i2].children[ii2].children.push(item)
+                                          })
+                                          if (i2 == tree.children[i2].children.length-1 && ii2==tree.children[i2].children.length-1){
+                                            for(let iii2 = 0; iii2 < tree.parent.length; iii2 ++){
+                                              console.log('iii2',iii2)
+                                              for(let iiii2 = 0; iiii2 < tree.parent[iii2].parent.length; iiii2 ++){
+                                                console.log('iiii2',iiii2)
+                                                let temp_parent2 = tree.parent[iii2].parent[iiii2]
+                                                console.log(temp_parent2)
+                                                _backward(temp_parent2, branchFactor, function(e,bbb){
+                                                  if(!e){
+                                                    bbb.forEach(function(item, index){
+                                                      tree.parent[iii2].parent[iiii2].parent.push(item)
+                                                    })
+                                                    if (iii2 == tree.parent.length-1 && iiii2 == tree.parent[iii2].parent.length-1){
+                                                      console.log(tree)
+                                                      res.send(tree)
+                                                    }
+                                                  }
+                                                })
+                                              }
+                                            }
+                                          }
+                                        }
+                                      })
+                                    }
+                                  }
+                                } else {
+                                  console.log(tree)
+                                  res.send( tree );
+                                }
+                              }
+                            }
+                          })
                         }
-                      })
+                      }
                     }
                   })
-                }
+                }*/
               } 
               else {
                 console.log(tree)
