@@ -102,7 +102,7 @@ class App extends Component {
               </li>) : null}
               { this.state.user ? (
                 <li>
-                  <a href="#/articles">My Trees</a>
+                  <a href="#/trees">My Trees</a>
                 </li>) : null}
               {
                 this.state.user ? (
