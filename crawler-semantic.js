@@ -4,14 +4,12 @@ const cheerio = require("cheerio");
 const paperTitle = 'Mastering the game of Go with deep neural networks and tree search'
 //const paperTitle = 'Active Opening Book Application for Monte-carlo Tree Search in 19×19 Go'
 //const paperTitle = 'Deep learning via semi-supervised embedding'
-//const paperTitle = 'Transductive Learning via Spectral Graph Partitioning'
+//const paperTitle = 'Learning to Predict by the Methods of Temporal Diierences'
 const branchFactor = 3 // max = 10
 const depthFactor = 1  // max = 2
 
 let paperURL = 'https://www.semanticscholar.org'
 let firstAuthor 
-let authors = []
-let publisher = ''
 let tree = {}
 
 // https://www.semanticscholar.org/search?q=machine%20learning&sort=relevance&ae=false
@@ -37,6 +35,10 @@ request({
 		//console.log(b);
 		$ = cheerio.load(b);
 		//console.log($('.result-page'))
+
+		let authors = []
+		let publisher = ''
+
 		paperRef = $('.search-result-title')[0].children[0].attribs.href
 		paperURL += paperRef
 		console.log('paperURL: ', paperURL)
@@ -46,14 +48,49 @@ request({
 		else
 			firstAuthor = $('.flex')[0].children[0].children[0].children[0].children[0].data
 
-		console.log( $(".venue-metadata") )
-		//console.log( $(".subhead") )
+		//console.log( $(".paper-title")._root[0].children )
+		//console.log( $(".venue-metadata") )
+		//console.log( $(".subhead")[0].children[2].children[0].children[0].children[0].data )
+		//console.log($(".paper-detail-content-section"))
+
+		//authors
+		if ($(".flex")[0].children.length > 6) {
+			for (let i = 0 ; i< 6 ; i++) {
+				if ($(".flex")[0].children[i].children[0].name == 'a')
+					authors.push($(".flex")[0].children[i].children[0].children[0].children[0].children[0].data)
+				else 
+					authors.push($(".flex")[0].children[i].children[0].children[0].children[0].data)
+			}
+		} else {
+			$(".flex")[0].children.forEach(function(item, index){
+				if (item.children[0].name == 'a')
+					authors.push(item.children[0].children[0].children[0].children[0].data)
+				else 
+					authors.push(item.children[0].children[0].children[0].data)
+			})
+		}
+		console.log(authors)
+		//if ($(".flex"))
+
+		//publisher
+		if ($(".subhead")[0].children[1].attribs.class == 'venue-metadata') {
+			if ($(".subhead")[0].children[1].children[0].name == 'a')
+				publisher += $(".subhead")[0].children[1].children[0].children[0].children[0].children[0].data
+
+			if ($(".subhead")[0].children[2].type=='tag')
+				publisher = publisher + " " + $(".subhead")[0].children[2].children[0].children[0].children[0].data
+		} else {
+			if ($(".subhead")[0].children[1].type=='tag')  
+				publisher += $(".subhead")[0].children[1].children[0].children[0].children[0].data
+		}
+		console.log('publisher', publisher)
 
 		const paper = {author: firstAuthor, title: paperTitle, url: paperURL}
 		tree = {
 			author: firstAuthor,
 			title: paperTitle,
 			url: paperURL,
+			publisher: publisher,
 			children:[],
 			parent:[],
 		}
@@ -156,6 +193,21 @@ function _forward(paper,callback) {
 				if ($(".sticky-nav__item__link")[i].attribs.href == '#citingPapers')
 					flag_cited = 1
 			}
+
+			//Publisher 
+			let publisher = ''
+			if ($(".subhead")[0].children[1].attribs.class == 'venue-metadata') {
+				if ($(".subhead")[0].children[1].children[0].name == 'a')
+					publisher += $(".subhead")[0].children[1].children[0].children[0].children[0].children[0].data
+
+				if ($(".subhead")[0].children[2].type=='tag')
+					publisher = publisher + " " + $(".subhead")[0].children[2].children[0].children[0].children[0].data
+			} else {
+				if ($(".subhead")[0].children[1].type=='tag')  
+					publisher += $(".subhead")[0].children[1].children[0].children[0].children[0].data
+			}
+			//console.log('publisher', publisher)
+
 			// Get Cited Papers
 			//console.log( $(".paper-detail-content-section")[1].children[3].children[0].children[1].children[0].children[0].children[0].children[0].data )
 			let article_start 
@@ -177,6 +229,7 @@ function _forward(paper,callback) {
 					let ref = {
 						title: $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[1].children[0].children[0].children[0].children[0].data,
 						author: temp[temp.length-2]+" "+temp[temp.length-1],
+						publisher: publisher,
 						url: 'https://www.semanticscholar.org' + urlRef,
 						children:[],
 						parent: [paper],
@@ -220,7 +273,20 @@ function _backward(paper, callback) {
 				if ($(".sticky-nav__item__link")[i].attribs.href == '#citingPapers')
 					flag_cited = 1
 			}
-			console.log('flag_ref',flag_ref)
+			//console.log('flag_ref',flag_ref)
+			//Publisher 
+			let publisher = ''
+			if ($(".subhead")[0].children[1].attribs.class == 'venue-metadata') {
+				if ($(".subhead")[0].children[1].children[0].name == 'a')
+					publisher += $(".subhead")[0].children[1].children[0].children[0].children[0].children[0].data
+
+				if ($(".subhead")[0].children[2].type=='tag')
+					publisher = publisher + " " + $(".subhead")[0].children[2].children[0].children[0].children[0].data
+			} else {
+				if ($(".subhead")[0].children[1].type=='tag')  
+					publisher += $(".subhead")[0].children[1].children[0].children[0].children[0].data
+			}
+
 			// Get Reference Papers
 			if (flag_ref == 1){
 				let refCount = 0
@@ -237,6 +303,7 @@ function _backward(paper, callback) {
 							title: $(".result-title")[i].children[0].children[0].children[0].data,
 							author: '',
 							url: '',
+							publisher: publisher,
 							parent: [],
 							children: [paper],
 						};
@@ -247,6 +314,7 @@ function _backward(paper, callback) {
 							title: $(".result-title")[i].children[0].children[0].children[0].data,
 							author: temp[temp.length-2]+" "+temp[temp.length-1],
 							url: 'https://www.semanticscholar.org'+ $(".result-title")[i].parent.attribs.href,
+							publisher: publisher,
 							parent: [],
 							children: [paper],
 						};

@@ -41,7 +41,6 @@ treeRouter.post('/crawler', async (req, res) => {
   const depthFactor = depth  
 
   let paperURL = 'https://www.semanticscholar.org'
-  let firstAuthor
   let tree = {}
 
   let arr = paperTitle.split(' ')
@@ -72,15 +71,51 @@ treeRouter.post('/crawler', async (req, res) => {
       let paperRef = $('.search-result-title')[0].children[0].attribs.href
       paperURL += paperRef
       //console.log('paperURL: ', paperURL)
+      let firstAuthor
       if ($('.flex')[0].children[0].children[0].name == 'a')
         firstAuthor = $('.flex')[0].children[0].children[0].children[0].children[0].children[0].data
       else
         firstAuthor = $('.flex')[0].children[0].children[0].children[0].children[0].data
-      const paper = {author: firstAuthor, title: paperTitle, url: paperURL}
+
+      //authors
+      let authors = []
+      if ($(".flex")[0].children.length > 6) {
+        for (let i = 0 ; i< 6 ; i++) {
+          if ($(".flex")[0].children[i].children[0].name == 'a')
+            authors.push($(".flex")[0].children[i].children[0].children[0].children[0].children[0].data)
+          else 
+            authors.push($(".flex")[0].children[i].children[0].children[0].children[0].data)
+        }
+      } else {
+        $(".flex")[0].children.forEach(function(item, index){
+          if (item.children[0].name == 'a')
+            authors.push(item.children[0].children[0].children[0].children[0].data)
+          else 
+            authors.push(item.children[0].children[0].children[0].data)
+        })
+      }
+      console.log('authors',authors)
+
+      //publisher
+      let publisher = ''
+      if ($(".subhead")[0].children[1].attribs.class == 'venue-metadata') {
+        if ($(".subhead")[0].children[1].children[0].name == 'a')
+          publisher += $(".subhead")[0].children[1].children[0].children[0].children[0].children[0].data
+
+        if ($(".subhead")[0].children[2].type=='tag')
+          publisher = publisher + " " + $(".subhead")[0].children[2].children[0].children[0].children[0].data
+      } else {
+        if ($(".subhead")[0].children[1].type=='tag')  
+          publisher += $(".subhead")[0].children[1].children[0].children[0].children[0].data
+      }
+      console.log('publisher', publisher)
+
+      const paper = {author: authors, title: paperTitle, url: paperURL}
       tree = {
-        author: firstAuthor,
+        author: authors,
         title: paperTitle,
         url: paperURL,
+        publisher: publisher,
         children:[],
         parent:[],
       }
@@ -194,6 +229,7 @@ function _forward(paper, branchFactor,callback) {
         if ($(".sticky-nav__item__link")[i].attribs.href == '#citingPapers')
           flag_cited = 1
       }
+
       // Get Cited Papers
       //console.log( $(".paper-detail-content-section")[1].children[3].children[0].children[1].children[0].children[0].children[0].children[0].data )
       let article_start 
@@ -208,15 +244,53 @@ function _forward(paper, branchFactor,callback) {
         update_bf = Math.min($(".paper-detail-content-section")[1].children.length-article_start, branchFactor)
       }
       //console.log('paper', paper.title, 'update_bf', update_bf)
-    
+
       for (let i = 0; i<update_bf ; i++) {
         if ($(".paper-detail-content-section")[1].children[article_start+i].children[0].children[1].name == 'a' ){
+          //authors
+          let uu = $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[2].children[0].children[0]
+          let authors_temp = []
+          if (uu.children.length > 6) {
+            for (let i = 0 ; i< 6 ; i++) {
+              if (uu.children[i].children[0].name == 'a')
+                authors_temp.push(uu.children[i].children[0].children[0].children[0].children[0].data)
+              else 
+                authors_temp.push(uu.children[i].children[0].children[0].children[0].data)
+            }
+          } else {
+            uu.children.forEach(function(item, index){
+              if (item.children[0].name == 'a')
+                authors_temp.push(item.children[0].children[0].children[0].children[0].data)
+              else 
+                authors_temp.push(item.children[0].children[0].children[0].data)
+            })
+          }
+          //console.log('authors',authors)
+
+          //publisher
+          let publisher_temp = ''
+          //console.log('TEST',$(".paper-detail-content-section")[1].children[3].children[0].children[2])
+          let qq = $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[2]
+          //console.log('TEST', qq.children[2])
+          if (qq.children[1].attribs.class == 'venue-metadata') {
+            if (qq.children[1].children[0].name == 'a')
+              publisher_temp += qq.children[1].children[0].children[0].children[0].children[0].data
+
+            if (qq.children[2].type=='tag')
+              publisher_temp = publisher_temp + " " + qq.children[2].children[0].data
+          } else {
+            if (qq.children[1].type=='tag')  
+              publisher_temp += qq.children[1].children[0].data
+          }
+          //console.log('publisher', publisher)
+
           const urlRef = $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[1].attribs.href
-          let temp = urlRef.split('paper/')[1].split('/')[0].split('-')
+          //let temp = urlRef.split('paper/')[1].split('/')[0].split('-')
           let ref = {
             title: $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[1].children[0].children[0].children[0].children[0].data,
-            author: temp[temp.length-2]+" "+temp[temp.length-1],
+            author: authors_temp, //temp[temp.length-2]+" "+temp[temp.length-1],
             url: 'https://www.semanticscholar.org' + urlRef,
+            publisher: publisher_temp,
             children:[],
             parent: [],
           };
@@ -259,6 +333,7 @@ function _backward(paper,branchFactor, callback) {
         if ($(".sticky-nav__item__link")[i].attribs.href == '#citingPapers')
           flag_cited = 1
       }
+
       // Get Reference Papers
       if (flag_ref == 1){
         let refCount = 0
@@ -269,22 +344,59 @@ function _backward(paper,branchFactor, callback) {
         //console.log(refCount)
         let update_bf = Math.min( refCount ,branchFactor)
         for (let i = 0; i<update_bf; i++) {
+          //authors
+          let uu = $(".paper-detail-content-section")[0].children[3+i].children[0].children[2].children[0].children[0]
+          let authors_temp = []
+          if (uu.children.length > 6) {
+            for (let i = 0 ; i< 6 ; i++) {
+              if (uu.children[i].children[0].name == 'a')
+                authors_temp.push(uu.children[i].children[0].children[0].children[0].children[0].data)
+              else 
+                authors_temp.push(uu.children[i].children[0].children[0].children[0].data)
+            }
+          } else {
+            uu.children.forEach(function(item, index){
+              if (item.children[0].name == 'a')
+                authors_temp.push(item.children[0].children[0].children[0].children[0].data)
+              else 
+                authors_temp.push(item.children[0].children[0].children[0].data)
+            })
+          }
+
+          //publisher
+          let publisher_temp = ''
+          //console.log('TEST',$(".paper-detail-content-section")[1].children[3].children[0].children[2])
+          let qq = $(".paper-detail-content-section")[0].children[3+i].children[0].children[2]
+          //console.log('TEST', qq.children[2])
+          if (qq.children[1].attribs.class == 'venue-metadata') {
+            if (qq.children[1].children[0].name == 'a')
+              publisher_temp += qq.children[1].children[0].children[0].children[0].children[0].data
+
+            if (qq.children[2].type=='tag')
+              publisher_temp = publisher_temp + " " + qq.children[2].children[0].data
+          } else {
+            if (qq.children[1].type=='tag')  
+              publisher_temp += qq.children[1].children[0].data
+          }
+
           let ref = {}
           if ( $(".result-title")[i].parent.name == 'div' ) {
             ref = {
               title: $(".result-title")[i].children[0].children[0].children[0].data,
               author: '',
               url: '',
+              publisher: '',
               parent: [],
               children: [],
             };
             refPaper.push( ref )
           } else if ( $(".result-title")[i].parent.name == 'a' ) {
-            let temp = $(".result-title")[i].parent.attribs.href.split('paper/')[1].split('/')[0].split('-')
+            //let temp = $(".result-title")[i].parent.attribs.href.split('paper/')[1].split('/')[0].split('-')
             ref = {
               title: $(".result-title")[i].children[0].children[0].children[0].data,
-              author: temp[temp.length-2]+" "+temp[temp.length-1],
+              author: authors_temp, //temp[temp.length-2]+" "+temp[temp.length-1],
               url: 'https://www.semanticscholar.org'+ $(".result-title")[i].parent.attribs.href,
+              publisher: publisher_temp,
               parent: [],
               children: [],
             };
