@@ -89,7 +89,7 @@ request({
 						//console.log(tree)
 						
 						if (depthFactor > 1) {
-							let tasks2go = tree.children.length + tree.parent.length
+							let tasks2go = tree.children.length
 							tree.children.forEach(function(temp_child, index) {
 								_forward(temp_child, function(e,aa){
 									if(e) console.log(e)
@@ -99,25 +99,26 @@ request({
 										}) 
 										tasks2go -= 1
 										if (tasks2go == 0) {
-											console.log(tree)
+											let tasks2go1 = tree.parent.length
+											tree.parent.forEach(function(temp_parent,index){
+												_backward(temp_parent, function(e,bb){
+													if(e) console.log(e)
+													else {
+														bb.forEach(function(item, index){
+															temp_parent.parent.push(item)
+														})
+														tasks2go1 -= 1
+														if (tasks2go1 == 0) {
+															console.log(tree)
+														}
+													}
+												})
+											})
 										}
 									}
 								})
 							})
-							tree.parent.forEach(function(temp_parent,index){
-								_backward(temp_parent, function(e,bb){
-									if(e) console.log(e)
-									else {
-										bb.forEach(function(item, index){
-											temp_parent.parent.push(item)
-										})
-										tasks2go -= 1
-										if (tasks2go == 0) {
-											console.log(tree)
-										}
-									}
-								})
-							})
+							
 							/*
 							for(let i = 0; i < tree.children.length ; i ++ ){
 								let temp_child = tree.children[i]
