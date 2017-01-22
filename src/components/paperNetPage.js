@@ -109,7 +109,7 @@ class PaperNetPage extends Component {
         <div className="row">
           <div className="col-md-12">
             <div className="input-group">
-              <span className="input-group-addon" id="article-title">@</span>
+              <span className="input-group-addon" id="article-title">標題</span>
               <input
                 type="text"
                 className="form-control"
@@ -125,7 +125,7 @@ class PaperNetPage extends Component {
         <div className="row">
           <div className="col-md-12">
             <div className="input-group">
-              <span className="input-group-addon" id="article-title">@</span>
+              <span className="input-group-addon" id="article-title">Max Branch</span>
               <input
                 type="int"
                 className="form-control"
@@ -141,7 +141,7 @@ class PaperNetPage extends Component {
         <div className="row">
           <div className="col-md-12">
             <div className="input-group">
-              <span className="input-group-addon" id="article-title">@</span>
+              <span className="input-group-addon" id="article-title">Max Depth</span>
               <input
                 type="int"
                 className="form-control"
