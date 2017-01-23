@@ -33,6 +33,7 @@
     "sequelize": "^3.27.0",
     "sequelize-cli": "^2.5.1",
     "sync-request": "^4.0.1",
+    "thenify": "^3.2.1",
     "tls": "0.0.1",
     "uuid": "^3.0.1",
     "vis": "^4.18.0"
