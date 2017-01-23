@@ -222,7 +222,7 @@ class PaperNetPage extends Component {
             <div>Title: {title}</div>
             <div>Authors: {authorString}</div>
             <div>Publisher: {publisher}</div>
-            <a href={url}>Link to paper</a>
+            <a href={url} target="_blank">Link to paper</a>
           </div>
         );
       }
@@ -246,7 +246,7 @@ class PaperNetPage extends Component {
         <div className="row">
           <div className="col-md-12 mycanvas">
             { this.state.runOnce===true ? (
-                this.state.drawing === false ? ( <span><PaperNetGraph graph={this.state.data} ref="graph" /></span> ) : <h3>Drawing...</h3> ) : null }
+                this.state.drawing === false ? ( <div className="center-block"><PaperNetGraph graph={this.state.data} ref="graph" /></div> ) : <h3>Drawing...</h3> ) : null }
           </div>
         </div>
       </div>

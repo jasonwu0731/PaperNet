@@ -59,13 +59,6 @@ class SingleTreePage extends Component {
     }
   }
 
-
-  renderTitle = () => {
-    const { tree } = this.state;
-    
-    return <h2>{tree.title}</h2>;
-  }
-
   focus(title) {
     this.setState({ focusTitle: title });
   }
@@ -197,7 +190,7 @@ class SingleTreePage extends Component {
             <div>Title: {title}</div>
             <div>Authors: {authorString}</div>
             <div>Publisher: {publisher}</div>
-            <a href={url}>Link to paper</a>
+            <a href={url} target="_blank">Link to paper</a>
           </div>
         );
       }
@@ -210,9 +203,9 @@ class SingleTreePage extends Component {
     return (
       <div>
       <h2>{tree.title}</h2>
-        <p>{tree.author}</p>
-        <p>{tree.publisher}</p>
-        <p><a href={tree.url}>{tree.url}</a></p>
+        <p>Authors: {tree.author}</p>
+        <p>Publisher: {tree.publisher}</p>
+        <p>URL: <a href={tree.url} target="_blank">Link to paper</a></p>
       </div>
     )
   }

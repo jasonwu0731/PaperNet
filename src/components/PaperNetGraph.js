@@ -76,7 +76,7 @@ class PaperNetGraph extends React.Component {
 
 PaperNetGraph.defaultProps = {
   graph: {},
-  style: { width: '900px', height: '850px' },
+  style: { width: '1000px', height: '850px' },
 };
 
 export default PaperNetGraph;
