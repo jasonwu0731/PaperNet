@@ -8,6 +8,7 @@ class LoginPage extends Component {
     this.state = {
       email: '',
       password: '',
+      password2: '',
       name: '',
     };
   }
@@ -18,7 +19,9 @@ class LoginPage extends Component {
     //if (confirm) {
     const body = this.state;
     if (body.name=='' || body.password=='' || body.email==''){
-      window.alert("註冊失敗, 請填寫所有資訊")
+      window.alert("Register failed, please fill all the blanks")
+    } else if (body.password != body.password2) {
+      window.alert("Two passwords are different")
     } else {
       let status = 1;
       //Check Valid or Not
@@ -53,11 +56,11 @@ class LoginPage extends Component {
               password: '',
               name: '',
             });
-            window.alert('註冊成功');
+            window.alert('Register success');
             window.location.href = '#/login';
           })
         } else {
-          window.alert('註冊失敗，使用者email已被使用');
+          window.alert('Register failed，e-mail has been used');
           this.setState({
               email: '',
               password: '',
@@ -86,6 +89,12 @@ class LoginPage extends Component {
     });
   }
 
+  handlePassword2Change = e => {
+    this.setState({
+      password2: e.target.value,
+    });
+  }
+
   render() {
     return (
       <div className="container">
@@ -96,7 +105,7 @@ class LoginPage extends Component {
               className="btn btn-Danger pull-right"
               role="button"
               onClick={this.handleSubmitClick}
-            >送出</button>
+            >Send</button>
           </div>
         </div>
         <div className="row">
@@ -107,7 +116,7 @@ class LoginPage extends Component {
               <input
                 type="text"
                 className="form-control"
-                placeholder="姓名"
+                placeholder="Name"
                 aria-describedby="article-title"
                 value={this.state.name}
                 onChange={this.handleNameChange}
@@ -123,7 +132,7 @@ class LoginPage extends Component {
               <input
                 type="text"
                 className="form-control"
-                placeholder="電子信箱"
+                placeholder="E-mail"
                 aria-describedby="article-title"
                 value={this.state.email}
                 onChange={this.handleEmailChange}
@@ -139,10 +148,26 @@ class LoginPage extends Component {
               <input
                 type="password"
                 className="form-control"
-                placeholder="密碼"
+                placeholder="Password"
                 aria-describedby="article-title"
                 value={this.state.password}
                 onChange={this.handlePasswordChange}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-4"></div>
+          <div className="col-md-4">
+            <div className="input-group">
+              <span className="input-group-addon" id="article-title"></span>
+              <input
+                type="password"
+                className="form-control"
+                placeholder="Double Check Password"
+                aria-describedby="article-title"
+                value={this.state.password2}
+                onChange={this.handlePassword2Change}
               />
             </div>
           </div>

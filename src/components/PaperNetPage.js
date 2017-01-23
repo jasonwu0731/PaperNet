@@ -290,7 +290,7 @@ class PaperNetPage extends Component {
     if ( Object.keys(this.state.tree).length === 0 ) 
       alert("NO TREE EXISTED!")
     else {
-      const confirm = window.confirm('確定要新增樹嗎？');
+      const confirm = window.confirm('Are you sure to add the tree？');
       if (confirm) {
         let body = {
           tree: this.state.tree,
@@ -318,11 +318,11 @@ class PaperNetPage extends Component {
         <div className="row">
           <div className="col-md-12">
             <div className="input-group">
-              <span className="input-group-addon" id="article-title">標題</span>
+              <span className="input-group-addon" id="article-title">Paper-Title or #Paper-Topic</span>
               <input
                 type="text"
                 className="form-control"
-                placeholder="請輸入 'Paper Title' 或 '#Topic' "
+                placeholder="ex: Mastering the game of Go with deep neural networks and tree search, #deep learning, etc."
                 aria-describedby="article-title"
                 value={this.state.title}
                 onChange={this.handleTitleChange}
@@ -338,7 +338,7 @@ class PaperNetPage extends Component {
               <input
                 type="int"
                 className="form-control"
-                placeholder="請輸入 branch of tree"
+                placeholder="Please set branch of tree"
                 aria-describedby="article-title"
                 value={this.state.branch}
                 onChange={this.handleBranchChange}
@@ -356,7 +356,7 @@ class PaperNetPage extends Component {
                   <input
                     type="int"
                     className="form-control"
-                    placeholder="請輸入 depth of tree"
+                    placeholder="Please set depth of tree"
                     aria-describedby="article-title"
                     value={this.state.depth}
                     onChange={this.handleDepthChange}

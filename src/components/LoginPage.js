@@ -37,7 +37,7 @@ class LoginPage extends Component {
           this.props.setUserInfo( info );
           document.location.href = '#/';
         } else {
-          window.alert('登入失敗');
+          window.alert('Login Failed');
         }
       })
     //}
@@ -69,12 +69,12 @@ class LoginPage extends Component {
               className="btn btn-primary pull-right"
               role="button"
               onClick={this.handleSubmitClick}
-            >登入</button>
+            >Login</button>
             <button
               className="btn btn-primary pull-right"
               role="button"
               onClick={this.handleRegisterClick}
-            >註冊帳號</button>
+            >Register</button>
           </div>         
         </div>
         <div className="row">
@@ -85,7 +85,7 @@ class LoginPage extends Component {
               <input
                 type="text"
                 className="form-control"
-                placeholder="電子信箱"
+                placeholder="E-mail"
                 aria-describedby="article-title"
                 value={this.state.email}
                 onChange={this.handleEmailChange}
@@ -102,7 +102,7 @@ class LoginPage extends Component {
               <input
                 type="password"
                 className="form-control"
-                placeholder="密碼"
+                placeholder="Password"
                 aria-describedby="article-title"
                 value={this.state.password}
                 onChange={this.handlePasswordChange}
