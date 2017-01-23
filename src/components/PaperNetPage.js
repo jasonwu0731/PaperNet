@@ -9,11 +9,11 @@ class PaperNetPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tree:{},
+      tree: {},
       title: '',
       branch: 5,
       depth: 2,
-      focusID: -1,
+      focusTitle: '',
       nodes: [],
       edges: [],
       titleToID: {},
@@ -25,8 +25,8 @@ class PaperNetPage extends Component {
     this.focus = this.focus.bind(this);
   }
 
-  focus(id) {
-    this.setState({ focusID: id });
+  focus(title) {
+    this.setState({ focusTitle: title });
   }
 
   treeGetIndex(tree) {
@@ -45,14 +45,14 @@ class PaperNetPage extends Component {
   }
 
   treeToNode(tree) {
-    const { title, url, author, parent, children } = tree;
+    const { title, url, author, publisher, parent, children } = tree;
     const myNodes = this.state.nodes;
     //myNodes = [...myNodes, { myID: nowID, title: title, url: url, author: author }];
     const nowID = this.state.titleToID[title];  
     let canPush = this.state.pushable;
     if (canPush[title] === true) {
       console.log('pushing node ' + title + ' id ' + nowID);
-      this.setState({ nodes: [...myNodes, { myID: nowID, title: title, url: url, author: author }] });
+      this.setState({ nodes: [...myNodes, { myID: nowID, title: title, url: url, author: author, publisher: publisher }] });
       canPush[title] = false
       this.setState({ pushable: canPush });
       if (parent.length > 0) {
@@ -105,18 +105,18 @@ class PaperNetPage extends Component {
       values.borderColor = '#2B7CE9';
       values.shadow = true;
       console.log('chose node ' + myID);
-      self.focus(myID);
+      self.focus(title);
     };
     return { id: myID, label: title, size: 150, color: '#FFCFCF', shape: 'box', font: { face: 'monospace', align: 'left' }, chosen: { node: myChoseNode } };
   }
 
   clearGraphData = () => {
     this.setState({
-      focusID: -1,
+      focusTitle: '',
       nodes: [],
       edges: [],
       titleToID: {},
-      // drawing: false,
+      drawing: true,
       data: {},
       uniqTitles: [],
       pushable: [],
@@ -163,16 +163,46 @@ class PaperNetPage extends Component {
           edges: this.state.edges
         };
         this.setState({ data: newdata });
+        this.setState({ drawing: false });
       });
+    }
+  }
+
+  renderFocusItem(title) {
+    for (var i = 0; i < this.state.nodes.length; ++i) {
+      if (title===this.state.nodes[i].title) {
+        const { myID, title, url, author, publisher } = this.state.nodes[i];
+        const authorString = (typeof(author)==='string') ? author : author.join(', ');
+        return (
+          <div className="panel-body">
+            <div>ID: {myID}</div>
+            <div>Title: {title}</div>
+            <div>Authors: {authorString}</div>
+            <div>Publisher: {publisher}</div>
+            <a href={url}>Link to paper</a>
+          </div>
+        );
+      }
     }
   }
 
   renderTree() {
     return (
-      <div className="container">
+      <div>
+        { this.state.focusTitle !== '' ? (
+          <div className="row">
+            <div className="col-md-12">
+              <div className="panel panel-primary">
+                <div className="panel-heading">
+                  <h3 className="panel-title">Paper Information</h3>
+                </div>
+                { this.renderFocusItem(this.state.focusTitle) }
+              </div>
+            </div>
+          </div> ) : null }
         <div className="row">
-          <div className="col-md-12 ppop">
-            <span><PaperNetGraph graph={this.state.data} ref="graph" /></span>
+          <div className="col-md-12 mycanvas">
+            { this.state.drawing === false ? ( <span><PaperNetGraph graph={this.state.data} ref="graph" /></span> ) : <span>Drawing...</span> }
           </div>
         </div>
       </div>
