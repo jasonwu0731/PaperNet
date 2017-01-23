@@ -11,7 +11,7 @@ class HomePage extends Component {
               <h1>Welcome to PaperNet, <a href="#/">{this.props.user.name}</a> </h1>
               <p>A website to automatically construct a citation and reference graph for your query concepts or papers.</p>
               {
-                this.props.user ? (<p><a className="btn btn-success btn-lg" href="#/trees" role="button">My Graph</a></p>)
+                this.props.user ? (<p><a className="btn btn-success btn-lg" href="#/trees" role="button">My Trees</a></p>)
                 : (<p>Please <a href="#/login">login</a> to build your own research tree!</p>)
               }
               {
