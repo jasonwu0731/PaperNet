@@ -182,6 +182,9 @@ class PaperNetPage extends Component {
         })
         .then( res => res.json() )
         .then( json => {
+          if(json.isFind == 0){
+            alert(`No \< ${this.state.title} \> is found. Replaced by \< ${json.title} \>`)
+          }
           this.setState({tree: json});
           this.treeGetIndex(json);
           let uniqTitles = Array.from( new Set(this.state.uniqTitles));
@@ -272,7 +275,7 @@ class PaperNetPage extends Component {
   }
 
   handleDepthChange = e => {
-    if (e.target.value <= 3) {
+    if (e.target.value <= 3 ) {
       this.setState({
         depth: e.target.value,
       });

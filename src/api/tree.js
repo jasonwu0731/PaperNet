@@ -192,6 +192,16 @@ treeRouter.post('/crawler', async (req, res) => {
       rr.children.forEach(function(itemr, indexr){
         trueTitle += itemr.children[0].data
       })
+      let trueTitle_arr = trueTitle.split(' ')
+      let paperTitle_arr = paperTitle.split(' ')
+      for (let i = 0 ; i < trueTitle_arr.length ; i++ ){
+        if (trueTitle_arr[i] == '') 
+          trueTitle_arr.splice(i,1)
+      }
+      for (let i = 0 ; i < paperTitle_arr.length ; i++ ){
+        if (paperTitle_arr[i] == '') 
+          paperTitle_arr.splice(i,1)
+      }
       //console.log(trueTitle.split(' '))
       //console.log(paperTitle.split(' '))
       //console.log(trueTitle===paperTitle)
@@ -247,8 +257,12 @@ treeRouter.post('/crawler', async (req, res) => {
         publisher: publisher,
         children:[],
         parent:[],
+        isFind: (trueTitle_arr.length === paperTitle_arr.length),
       }
-      
+
+      if (depth == 0 || branch == 0) 
+        onComplete(tree, res)
+      else {
       _forward(paper, branchFactor, function(e, aa) {
         if (!e) {
           _backward(paper, branchFactor, function(e,bb) {
@@ -264,6 +278,8 @@ treeRouter.post('/crawler', async (req, res) => {
                 let tasks2go2 = 0
                 let tasks2go3 = 0
                 let tasks2go4 = 0
+                if (tasks2go == 0)
+                  onComplete(tree,res)
                 tree.children.forEach(function(temp_child, index) {
                   _forward(temp_child, branchFactor, function(e,aa){
                     if(e) console.log(e)
@@ -274,6 +290,8 @@ treeRouter.post('/crawler', async (req, res) => {
                       }) 
                       tasks2go -= 1
                       if (tasks2go <= 0) {
+                        if( tasks2go1 == 0)
+                          onComplete(tree,res)
                         tree.parent.forEach(function(temp_parent,index){
                           _backward(temp_parent, branchFactor, function(e,bb){
                             if(e) console.log(e)
@@ -287,6 +305,8 @@ treeRouter.post('/crawler', async (req, res) => {
                                 if (depthFactor == 2) 
                                   onComplete(tree, res)
                                 else {
+                                  if (tasks2go2 == 0)
+                                    onComplete(tree, res)
                                   tree.children.forEach(function(child1, index) {
                                     child1.children.forEach(function(child2, index){
                                       _forward(child2, branchFactor, function(e,aaa){
@@ -298,21 +318,19 @@ treeRouter.post('/crawler', async (req, res) => {
                                           tasks2go2 -= 1
                                           if (tasks2go2 <= 0) {
                                             if (tasks2go3 == 0)
-                                              onComplete(tree, res)
-                                            else {
-                                              tree.parent.forEach(function(parent1, index){
-                                                parent1.parent.forEach(function(parent2, idnex){
-                                                  _backward(parent2, branchFactor, function(e,bbb){
-                                                    bbb.forEach(function(item,index){
-                                                      parent2.parent.push(item)
-                                                    })
-                                                    tasks2go3 -= 1
-                                                    if(tasks2go3 <= 0 )
-                                                      onComplete(tree,res)
+                                              onComplete(tree, res) 
+                                            tree.parent.forEach(function(parent1, index){
+                                              parent1.parent.forEach(function(parent2, idnex){
+                                                _backward(parent2, branchFactor, function(e,bbb){
+                                                  bbb.forEach(function(item,index){
+                                                    parent2.parent.push(item)
                                                   })
+                                                  tasks2go3 -= 1
+                                                  if(tasks2go3 <= 0 )
+                                                    onComplete(tree,res)
                                                 })
                                               })
-                                            }
+                                            })
                                           }
                                         }
                                       })
@@ -335,6 +353,7 @@ treeRouter.post('/crawler', async (req, res) => {
           })
         }
       })
+      }
     }
   });
   
@@ -369,21 +388,26 @@ function _forward(paper, branchFactor,callback) {
       //console.log( $(".paper-detail-content-section")[1].children[3].children[0].children[1].children[0].children[0].children[0].children[0].data )
       let article_start 
       let update_bf
+      let kk
       if (flag_cited == 0) 
         update_bf = 0
       else {  
-        for ( article_start = 0; article_start < $(".paper-detail-content-section")[1].children.length; article_start++) {
-          if ($(".paper-detail-content-section")[1].children[article_start].name == 'article') 
+        if (flag_ref == 1)
+          kk = $(".paper-detail-content-section")[1]
+        else 
+          kk = $(".paper-detail-content-section")[0]
+        for ( article_start = 0; article_start < kk.children.length; article_start++) {
+          if (kk.children[article_start].name == 'article') 
             break;
         }
-        update_bf = Math.min($(".paper-detail-content-section")[1].children.length-article_start, branchFactor)
+        update_bf = Math.min(kk.children.length-article_start, branchFactor)
       }
       //console.log('paper', paper.title, 'update_bf', update_bf)
 
       for (let i = 0; i<update_bf ; i++) {
-        if ($(".paper-detail-content-section")[1].children[article_start+i].children[0].children[1].name == 'a' ){
+        if (kk.children[article_start+i].children[0].children[1].name == 'a' ){
           //authors
-          let uu = $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[2].children[0].children[0]
+          let uu = kk.children[article_start+i].children[0].children[2].children[0].children[0]
           let authors_temp = []
           if (uu.children.length > 6) {
             for (let i = 0 ; i< 6 ; i++) {
@@ -405,7 +429,7 @@ function _forward(paper, branchFactor,callback) {
           //publisher
           let publisher_temp = ''
           //console.log('TEST',$(".paper-detail-content-section")[1].children[3].children[0].children[2])
-          let qq = $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[2]
+          let qq = kk.children[article_start+i].children[0].children[2]
           //console.log('TEST', qq.children[2])
           if (qq.children.length >= 2) {
             if (qq.children[1].attribs.class == 'venue-metadata') {
@@ -421,10 +445,10 @@ function _forward(paper, branchFactor,callback) {
             //console.log('publisher', publisher)
           }
 
-          const urlRef = $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[1].attribs.href
+          const urlRef = kk.children[article_start+i].children[0].children[1].attribs.href
           //let temp = urlRef.split('paper/')[1].split('/')[0].split('-')
           let ref = {
-            title: $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[1].children[0].children[0].children[0].children[0].data,
+            title: kk.children[article_start+i].children[0].children[1].children[0].children[0].children[0].children[0].data,
             author: authors_temp, //temp[temp.length-2]+" "+temp[temp.length-1],
             url: 'https://www.semanticscholar.org' + urlRef,
             publisher: publisher_temp,
