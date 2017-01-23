@@ -61,12 +61,6 @@ class SingleTreePage extends Component {
     }
   }
 
-  renderTitle = () => {
-    const { tree } = this.state;
-    
-    return <h2>{tree.title}</h2>;
-  }
-
   focus(id) {
     this.setState({ focusID: id });
   }
@@ -184,6 +178,19 @@ class SingleTreePage extends Component {
       edges: this.state.edges
     };
     this.setState({ data: newdata });
+  }
+
+  renderTitle = () => {
+    const { tree } = this.state;
+
+    return (
+      <div>
+      <h2>{tree.title}</h2>
+        <p>{tree.author}</p>
+        <p>{tree.publisher}</p>
+        <p><a href={tree.url}>{tree.url}</a></p>
+      </div>
+    )
   }
 
   renderTree() {

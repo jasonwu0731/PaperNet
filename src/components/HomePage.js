@@ -11,11 +11,11 @@ class HomePage extends Component {
               <h1>Welcome to PaperNet, <a href="#/">{this.props.user.name}</a> </h1>
               <p>A website to automatically construct a citation and reference graph for your query concepts or papers.</p>
               {
-                this.props.user ? (<p><a className="btn btn-success btn-lg" href="#/trees" role="button">My Trees</a></p>)
+                this.props.user ? (<p><a className="btn btn-success btn-lg" href="#/trees" role="button">My Graph</a></p>)
                 : (<p>Please <a href="#/login">login</a> to build your own research tree!</p>)
               }
               {
-                this.props.user ? (<p><a className="btn btn-success btn-lg" href="#/paperNet" role="button">Create Tree</a></p>):null
+                this.props.user ? (<p><a className="btn btn-success btn-lg" href="#/paperNet" role="button">Search Paper</a></p>):null
               }
             </div>
           </div>

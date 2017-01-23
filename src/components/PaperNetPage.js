@@ -120,50 +120,89 @@ class PaperNetPage extends Component {
       data: {},
       uniqTitles: [],
       pushable: [],
+      tree: {},
     });
   }
 
   handleTree = () => {
     //console.log(this.state.title)
-    let body = {title: this.state.title, branch: this.state.branch, depth: this.state.depth} //{title: 'Mastering the game of Go with deep neural networks and tree search'}
     if (this.state.title == ''){
       window.alert("論文標題不可空白")
     } else {
       this.clearGraphData();
-      fetch('/api/tree/crawler', {
-        headers: {
-            //Accept: 'application/json',
-            'Content-Type': 'application/json'
+      if(this.state.title[0]=='#') {
+        let body = {topic: this.state.title.split('#')[1], branch: this.state.branch}
+        fetch('/api/tree/crawler/topic', {
+          headers: {
+              //Accept: 'application/json',
+              'Content-Type': 'application/json'
           },
           method: 'POST',
           body: JSON.stringify(body),
-      })
-      .then( res => res.json() )
-      .then( json => {
-        this.setState({tree: json});
-        this.treeGetIndex(json);
-        let uniqTitles = Array.from( new Set(this.state.uniqTitles));
-        let myDic = {}
-        let pushable = {}
-        for (var i = 0; i < uniqTitles.length; ++i) {
-          myDic[uniqTitles[i]] = i;
-          pushable[uniqTitles[i]] = true;
-        }
-        this.setState({ uniqTitles: uniqTitles, titleToID: myDic, pushable: pushable });
-        return json;
-      })
-      .then( json => {
-        this.treeToNode(json);
-        this.treeToEdge(json);
-        console.log(json);
-      })
-      .then(() =>{
-        const newdata = {
-          nodes: this.state.nodes.map((v, i) => this.myGenNode(v)),
-          edges: this.state.edges
-        };
-        this.setState({ data: newdata });
-      });
+        })
+        .then( res => res.json() )
+        .then( json => {
+          this.setState({tree: json});
+          this.treeGetIndex(json);
+          let uniqTitles = Array.from( new Set(this.state.uniqTitles));
+          let myDic = {}
+          let pushable = {}
+          for (var i = 0; i < uniqTitles.length; ++i) {
+            myDic[uniqTitles[i]] = i;
+            pushable[uniqTitles[i]] = true;
+          }
+          this.setState({ uniqTitles: uniqTitles, titleToID: myDic, pushable: pushable });
+          return json;
+        })
+        .then( json => {
+          this.treeToNode(json);
+          this.treeToEdge(json);
+          console.log(json);
+        })
+        .then(() =>{
+          const newdata = {
+            nodes: this.state.nodes.map((v, i) => this.myGenNode(v)),
+            edges: this.state.edges
+          };
+          this.setState({ data: newdata });
+        });
+      } else {
+        let body = {title: this.state.title, branch: this.state.branch, depth: this.state.depth} 
+        fetch('/api/tree/crawler', {
+          headers: {
+              //Accept: 'application/json',
+              'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify(body),
+        })
+        .then( res => res.json() )
+        .then( json => {
+          this.setState({tree: json});
+          this.treeGetIndex(json);
+          let uniqTitles = Array.from( new Set(this.state.uniqTitles));
+          let myDic = {}
+          let pushable = {}
+          for (var i = 0; i < uniqTitles.length; ++i) {
+            myDic[uniqTitles[i]] = i;
+            pushable[uniqTitles[i]] = true;
+          }
+          this.setState({ uniqTitles: uniqTitles, titleToID: myDic, pushable: pushable });
+          return json;
+        })
+        .then( json => {
+          this.treeToNode(json);
+          this.treeToEdge(json);
+          console.log(json);
+        })
+        .then(() =>{
+          const newdata = {
+            nodes: this.state.nodes.map((v, i) => this.myGenNode(v)),
+            edges: this.state.edges
+          };
+          this.setState({ data: newdata });
+        });
+      }
     }
   }
 
@@ -245,7 +284,7 @@ class PaperNetPage extends Component {
               <input
                 type="text"
                 className="form-control"
-                placeholder="請輸入論文標題"
+                placeholder="請輸入 'Paper Title' 或 '#Topic' "
                 aria-describedby="article-title"
                 value={this.state.title}
                 onChange={this.handleTitleChange}
@@ -270,22 +309,27 @@ class PaperNetPage extends Component {
           </div>
           <div className="col-md-12"></div>
         </div>
-        <div className="row">
-          <div className="col-md-12">
-            <div className="input-group">
-              <span className="input-group-addon" id="article-title">Max Depth</span>
-              <input
-                type="int"
-                className="form-control"
-                placeholder="請輸入 depth of tree"
-                aria-describedby="article-title"
-                value={this.state.depth}
-                onChange={this.handleDepthChange}
-              />
+        {
+          (this.state.title[0]=='#') ? null : (
+            <div className="row">
+              <div className="col-md-12">
+                <div className="input-group">
+                  <span className="input-group-addon" id="article-title">Max Depth</span>
+                  <input
+                    type="int"
+                    className="form-control"
+                    placeholder="請輸入 depth of tree"
+                    aria-describedby="article-title"
+                    value={this.state.depth}
+                    onChange={this.handleDepthChange}
+                  />
+                </div>
+              </div>
+              <div className="col-md-12"></div>
             </div>
-          </div>
-          <div className="col-md-12"></div>
-        </div>
+          )
+        }
+        
         <div className="row">
           <div className="col-md-12">
             <p>

@@ -53,6 +53,101 @@ treeRouter.delete('/:id', async (req, res) => {
   });
 });
 
+treeRouter.post('/crawler/topic', async(req, res) => {
+  const { topic, branch } = req.body;
+
+  console.log( "original information", topic); 
+
+  const paperURL = 'https://www.semanticscholar.org'
+  let tree = {}
+
+  let arr = topic.split(' ')
+  //console.log(arr)
+  let myURL = 'https://www.semanticscholar.org/search?q=';
+  for (let i=0; i<arr.length; i++) {
+    if (i == arr.length-1){
+      myURL += (arr[i]+"&sort=relevance&ae=false")
+      break;
+    }
+    myURL += (arr[i]+"%20")
+  }
+  console.log(myURL)
+
+  let onComplete = function(tree, res){
+    console.log(tree)
+    res.send(tree)
+  }
+
+  request({
+    url:myURL,
+    method: "GET"
+  }, function(e, r, b){
+    if (e) console.log(e)
+    else {
+      const $ = cheerio.load(b);
+      //console.log($(".result-page")[0])
+      tree = {
+        author: [],
+        title: topic,
+        url: myURL,
+        publisher: '',
+        children:[],
+        parent:[],
+      }
+      const update_bf = Math.min(branch, $(".search-result-title").length)
+
+      //$(".search-result-title").forEach(function(item, index){
+      for (let i = 0; i < update_bf; i ++){
+        let item = $(".search-result-title")[i]
+        let title_temp = ''
+        let temp_url = paperURL
+
+        //authors
+        let authors = []
+        let flex = item.parent.parent.children[1].children[0].children[0]
+        if (flex.children.length > 6) {
+          for (let i = 0 ; i< 6 ; i++) {
+            if (flex.children[i].children[0].name == 'a')
+              authors.push(flex.children[i].children[0].children[0].children[0].children[0].data)
+            else 
+              authors.push(flex.children[i].children[0].children[0].children[0].data)
+          }
+        } else {
+          flex.children.forEach(function(item, index){
+            if (item.children[0].name == 'a')
+              authors.push(item.children[0].children[0].children[0].children[0].data)
+            else 
+              authors.push(item.children[0].children[0].children[0].data)
+          })
+        }
+        //console.log('authors',authors)
+
+        if(item.children[0].name == 'a'){
+          //console.log(item.children[0])
+          temp_url += item.children[0].attribs.href
+          item.children[0].children[0].children.forEach(function(item1 ,index1){
+            console.log(item1.children[0].data)
+            title_temp += item1.children[0].data
+          })
+        }
+
+        let child = {
+          author: authors,
+          title: title_temp,
+          url: temp_url,
+          publisher: '',
+          children:[],
+          parent:[],
+        }
+        tree.children.push(child)
+        if (i == update_bf - 1) 
+          onComplete(tree, res)
+      }
+    } 
+  })
+})
+
+
 treeRouter.post('/crawler', async (req, res) => {
   const { title, branch, depth } = req.body;
 

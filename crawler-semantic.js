@@ -1,10 +1,10 @@
 const request = require("request");
 const cheerio = require("cheerio");
 
-const paperTitle = 'Mastering the game of Go with deep neural networks and tree search'
+//const paperTitle = 'Mastering the game of Go with deep neural networks and tree search'
 //const paperTitle = 'Active Opening Book Application for Monte-carlo Tree Search in 19×19 Go'
 //const paperTitle = 'Deep learning via semi-supervised embedding'
-//const paperTitle = 'Learning to Predict by the Methods of Temporal Diierences'
+const paperTitle = 'gradient decent'
 const branchFactor = 3 // max = 10
 const depthFactor = 1  // max = 2
 
@@ -32,8 +32,9 @@ request({
 	method: "GET"
 }, function(e,r,b) {
 	if(!e) {
-		//console.log(b);
+		console.log(b);
 		$ = cheerio.load(b);
+		//console.log($)
 		//console.log($('.result-page'))
 
 		let authors = []
