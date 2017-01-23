@@ -81,7 +81,7 @@ class LoginPage extends Component {
           <div className="col-md-4"></div>
           <div className="col-md-4">
             <div className="input-group">
-              <span className="input-group-addon" id="article-title">@</span>
+              <span className="input-group-addon" id="article-title">E-mail</span>
               <input
                 type="text"
                 className="form-control"
@@ -98,7 +98,7 @@ class LoginPage extends Component {
           <div className="col-md-4"></div>
           <div className="col-md-4">
             <div className="input-group">
-              <span className="input-group-addon" id="article-title">@</span>
+              <span className="input-group-addon" id="article-title">Password</span>
               <input
                 type="password"
                 className="form-control"

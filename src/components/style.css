@@ -5,3 +5,8 @@
   margin-bottom: 10px;
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.2);
 }
+
+.mycanvas {
+  background-color: #ffffb0;
+  border-radius: 15%;
+}
