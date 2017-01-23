@@ -20,6 +20,8 @@ class PaperNetPage extends Component {
       data: {},
       uniqTitles: [],
       pushable: [],
+      runOnce: false,
+      drawing: true,
     };
     this.myGenNode = this.myGenNode.bind(this);
     this.focus = this.focus.bind(this);
@@ -120,6 +122,7 @@ class PaperNetPage extends Component {
       data: {},
       uniqTitles: [],
       pushable: [],
+      runOnce: true,
     });
   }
 
@@ -202,7 +205,8 @@ class PaperNetPage extends Component {
           </div> ) : null }
         <div className="row">
           <div className="col-md-12 mycanvas">
-            { this.state.drawing === false ? ( <span><PaperNetGraph graph={this.state.data} ref="graph" /></span> ) : <span>Drawing...</span> }
+            { this.state.runOnce===true ? (
+                this.state.drawing === false ? ( <span><PaperNetGraph graph={this.state.data} ref="graph" /></span> ) : <h3>Drawing...</h3> ) : null }
           </div>
         </div>
       </div>
