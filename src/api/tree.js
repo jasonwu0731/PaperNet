@@ -47,7 +47,7 @@ treeRouter.delete('/:id', async (req, res) => {
       id,
     },
   });
-  
+
   res.json({
     deletedId: +id,
   });
@@ -301,17 +301,19 @@ function _forward(paper, branchFactor,callback) {
           //console.log('TEST',$(".paper-detail-content-section")[1].children[3].children[0].children[2])
           let qq = $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[2]
           //console.log('TEST', qq.children[2])
-          if (qq.children[1].attribs.class == 'venue-metadata') {
-            if (qq.children[1].children[0].name == 'a')
-              publisher_temp += qq.children[1].children[0].children[0].children[0].children[0].data
+          if (qq.children.length >= 2) {
+            if (qq.children[1].attribs.class == 'venue-metadata') {
+              if (qq.children[1].children[0].name == 'a')
+                publisher_temp += qq.children[1].children[0].children[0].children[0].children[0].data
 
-            if (qq.children[2].type=='tag')
-              publisher_temp = publisher_temp + " " + qq.children[2].children[0].data
-          } else {
-            if (qq.children[1].type=='tag')  
-              publisher_temp += qq.children[1].children[0].data
+              if (qq.children[2].type=='tag')
+                publisher_temp = publisher_temp + " " + qq.children[2].children[0].data
+            } else {
+              if (qq.children[1].type=='tag')  
+                publisher_temp += qq.children[1].children[0].data
+            }
+            //console.log('publisher', publisher)
           }
-          //console.log('publisher', publisher)
 
           const urlRef = $(".paper-detail-content-section")[1].children[article_start+i].children[0].children[1].attribs.href
           //let temp = urlRef.split('paper/')[1].split('/')[0].split('-')
@@ -398,15 +400,17 @@ function _backward(paper,branchFactor, callback) {
           //console.log('TEST',$(".paper-detail-content-section")[1].children[3].children[0].children[2])
           let qq = $(".paper-detail-content-section")[0].children[3+i].children[0].children[2]
           //console.log('TEST', qq.children[2])
-          if (qq.children[1].attribs.class == 'venue-metadata') {
-            if (qq.children[1].children[0].name == 'a')
-              publisher_temp += qq.children[1].children[0].children[0].children[0].children[0].data
+          if (qq.children.length >= 2) {
+            if (qq.children[1].attribs.class == 'venue-metadata') {
+              if (qq.children[1].children[0].name == 'a')
+                publisher_temp += qq.children[1].children[0].children[0].children[0].children[0].data
 
-            if (qq.children[2].type=='tag')
-              publisher_temp = publisher_temp + " " + qq.children[2].children[0].data
-          } else {
-            if (qq.children[1].type=='tag')  
-              publisher_temp += qq.children[1].children[0].data
+              if (qq.children[2].type=='tag')
+                publisher_temp = publisher_temp + " " + qq.children[2].children[0].data
+            } else {
+              if (qq.children[1].type=='tag')  
+                publisher_temp += qq.children[1].children[0].data
+            }
           }
 
           let ref = {}
