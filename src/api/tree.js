@@ -177,7 +177,7 @@ treeRouter.post('/crawler', async (req, res) => {
     console.log(tree)
     res.send(tree)
   }
-
+  
   request({
     url: myURL,
     method: "GET"
@@ -185,6 +185,17 @@ treeRouter.post('/crawler', async (req, res) => {
     if(!e) {
       //console.log(b);
       const $ = cheerio.load(b);
+
+      //console.log($('.search-result-title')[0].children[0].children[0].children[0])
+      let rr = $('.search-result-title')[0].children[0].children[0]
+      let trueTitle = ''
+      rr.children.forEach(function(itemr, indexr){
+        trueTitle += itemr.children[0].data
+      })
+      //console.log(trueTitle.split(' '))
+      //console.log(paperTitle.split(' '))
+      //console.log(trueTitle===paperTitle)
+
       //console.log($('.result-page'))
       let paperRef = $('.search-result-title')[0].children[0].attribs.href
       paperURL += paperRef
@@ -231,7 +242,7 @@ treeRouter.post('/crawler', async (req, res) => {
       const paper = {author: authors, title: paperTitle, url: paperURL}
       tree = {
         author: authors,
-        title: paperTitle,
+        title: trueTitle,
         url: paperURL,
         publisher: publisher,
         children:[],
