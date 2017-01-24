@@ -16,5 +16,5 @@
 
 ## Credicts
  - This is the final project for the course Web Programming (2016 Fall), at National Taiwan University
- - Arthors: Chien-Sheng Wu, Yuan-Ting Hsieh
+ - Authors: Chien-Sheng Wu, Yuan-Ting Hsieh
 
