@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 import Request from "request";
 import cheerio from "cheerio";
+import TagsInput from 'react-tagsinput';
+import 'react-tagsinput/react-tagsinput.css';
 
 import PaperNetGraph from './PaperNetGraph';
 
@@ -11,6 +13,7 @@ class PaperNetPage extends Component {
     this.state = {
       tree: {},
       title: '',
+      tags: [],
       branch: 5,
       depth: 2,
       focusTitle: '',
@@ -127,15 +130,23 @@ class PaperNetPage extends Component {
     });
   }
 
+  handleTagsChange = tags => {
+    this.setState({ tags });
+  }
+
+
   handleTree = () => {
     //console.log(this.state.title)
-    if (this.state.title == ''){
-      window.alert("論文標題不可空白")
+    if (this.state.title == '' && this.state.tags == []){
+      window.alert("Please fill the blanks.")
     } else {
-      this.clearGraphData();
-      if(this.state.title[0]=='#') {
-        let body = {topic: this.state.title.split('#')[1], branch: this.state.branch}
-        fetch('/api/tree/crawler/topic', {
+      this.clearGraphData(); 
+      if (this.state.title != '') {
+        let topicTitle = this.state.title
+        for (let i = 0 ; i < this.state.tags.length; i++)
+          topicTitle = topicTitle + ' ' + this.state.tags[i] + ' '
+        let body = {title: topicTitle, branch: this.state.branch, depth: this.state.depth} 
+        fetch('/api/tree/crawler', {
           headers: {
               //Accept: 'application/json',
               'Content-Type': 'application/json'
@@ -145,6 +156,9 @@ class PaperNetPage extends Component {
         })
         .then( res => res.json() )
         .then( json => {
+          if(json.isFind == 0){
+            alert(`No \< ${this.state.title} \> is found. Replaced by \< ${json.title} \>`)
+          }
           this.setState({tree: json});
           this.treeGetIndex(json);
           let uniqTitles = Array.from( new Set(this.state.uniqTitles));
@@ -170,9 +184,12 @@ class PaperNetPage extends Component {
           this.setState({ data: newdata });
           this.setState({ drawing: false });
         });
-      } else {
-        let body = {title: this.state.title, branch: this.state.branch, depth: this.state.depth} 
-        fetch('/api/tree/crawler', {
+      } else if (this.state.tags != []) {
+        let topic = ''
+        for (let i = 0 ; i < this.state.tags.length; i++)
+          topic = topic + this.state.tags[i] + ' '
+        let body = {topic: topic, branch: this.state.branch}
+        fetch('/api/tree/crawler/topic', {
           headers: {
               //Accept: 'application/json',
               'Content-Type': 'application/json'
@@ -182,9 +199,6 @@ class PaperNetPage extends Component {
         })
         .then( res => res.json() )
         .then( json => {
-          if(json.isFind == 0){
-            alert(`No \< ${this.state.title} \> is found. Replaced by \< ${json.title} \>`)
-          }
           this.setState({tree: json});
           this.treeGetIndex(json);
           let uniqTitles = Array.from( new Set(this.state.uniqTitles));
@@ -245,7 +259,8 @@ class PaperNetPage extends Component {
                 { this.renderFocusItem(this.state.focusTitle) }
               </div>
             </div>
-          </div> ) : null }
+          </div> 
+          ) : null }
         <div className="row">
           <div className="col-md-12 mycanvas">
             { this.state.runOnce===true ? (
@@ -318,7 +333,7 @@ class PaperNetPage extends Component {
         <div className="row">
           <div className="col-md-12">
             <div className="input-group">
-              <span className="input-group-addon" id="article-title">Paper-Title or #Paper-Topic</span>
+              <span className="input-group-addon" id="article-title">Paper-Title</span>
               <input
                 type="text"
                 className="form-control"
@@ -330,6 +345,11 @@ class PaperNetPage extends Component {
             </div>
           </div>
           <div className="col-md-12"></div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <TagsInput value={this.state.tags} onChange={this.handleTagsChange} placeholder='Keyword Search' />
+          </div>
         </div>
         <div className="row">
           <div className="col-md-12">
@@ -348,7 +368,7 @@ class PaperNetPage extends Component {
           <div className="col-md-12"></div>
         </div>
         {
-          (this.state.title[0]=='#') ? null : (
+          (this.state.title==' ' && this.state.tags!=[]) ? null : (
             <div className="row">
               <div className="col-md-12">
                 <div className="input-group">

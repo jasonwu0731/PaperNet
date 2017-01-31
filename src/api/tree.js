@@ -184,6 +184,7 @@ treeRouter.post('/crawler', async (req, res) => {
   }, function(e,r,b) {
     if(!e) {
       //console.log(b);
+      try {
       const $ = cheerio.load(b);
 
       //console.log($('.search-result-title')[0].children[0].children[0].children[0])
@@ -354,6 +355,10 @@ treeRouter.post('/crawler', async (req, res) => {
         }
       })
       }
+    } catch(err) {
+      onComplete(tree, res);
+    }
+
     }
   });
   
@@ -364,6 +369,7 @@ treeRouter.post('/crawler', async (req, res) => {
 function _forward(paper, branchFactor,callback) {
   console.log('forward',paper.title)
   let citedPaper = []
+  try {
   const url_in = paper.url
   if (url_in == ''){
     callback(null, citedPaper);
@@ -466,13 +472,17 @@ function _forward(paper, branchFactor,callback) {
           callback(null, citedPaper);
       //console.log('@@@ cited papers with branchFactor: ', branchFactor, citedPaper)
     });
-  } 
+  }
+  } catch (err) {
+    callback(null, citedPaper);
+  }
   //return citedPaper
 }
 
 function _backward(paper,branchFactor, callback) {
   console.log('_backward',paper.title)
   let refPaper = []
+  try {
   const url_in = paper.url
   if (url_in == ''){
     callback(null, refPaper);
@@ -507,7 +517,12 @@ function _backward(paper,branchFactor, callback) {
         let update_bf = Math.min( refCount ,branchFactor)
         for (let i = 0; i<update_bf; i++) {
           //authors
-          let uu = $(".paper-detail-content-section")[0].children[3+i].children[0].children[2].children[0].children[0]
+          //console.log($(".paper-detail-content-section")[0])
+          let uu
+          if ($(".paper-detail-content-section")[0].children[2+i].name == 'article')
+            uu = $(".paper-detail-content-section")[0].children[2+i].children[0].children[2].children[0].children[0]
+          else
+            uu = $(".paper-detail-content-section")[0].children[3+i].children[0].children[2].children[0].children[0]
           let authors_temp = []
           if (uu.children.length > 6) {
             for (let i = 0 ; i< 6 ; i++) {
@@ -528,7 +543,11 @@ function _backward(paper,branchFactor, callback) {
           //publisher
           let publisher_temp = ''
           //console.log('TEST',$(".paper-detail-content-section")[1].children[3].children[0].children[2])
-          let qq = $(".paper-detail-content-section")[0].children[3+i].children[0].children[2]
+          let qq 
+          if ($(".paper-detail-content-section")[0].children[2+i].name == 'article')
+            qq = $(".paper-detail-content-section")[0].children[2+i].children[0].children[2]
+          else
+            qq = $(".paper-detail-content-section")[0].children[3+i].children[0].children[2]
           //console.log('TEST', qq.children[2])
           if (qq.children.length >= 2) {
             if (qq.children[1].attribs.class == 'venue-metadata') {
@@ -576,6 +595,9 @@ function _backward(paper,branchFactor, callback) {
           callback(null, refPaper);
       //console.log('@@@ reference papers with branchFactor: ', branchFactor, refPaper)
     });
+  }
+  } catch (err) {
+    callback(null, refPaper);
   }
   //return refPaper
 }
