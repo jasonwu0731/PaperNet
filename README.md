@@ -15,6 +15,7 @@
 1. downlaod mysql from [here](https://dev.mysql.com/downloads/)
 2. `mysql -u root -p` should be successful to login 
 3. mysql> create database YOUR_DATABASE
+
 #### Run 
 1. `git clone https://github.com/jasonwu0731/PaperNet.git` 
 2. `cd PaperNet` then `npm install`
