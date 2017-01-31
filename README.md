@@ -3,6 +3,7 @@
 
 ## Description
  - A website to automatically construct a citation and reference tree for your query papers or keywords.
+ - Get the tree structure that References --> Paper --> Citations
  - Get the information of papers such as titles, authors, links, publishers, etc.
  - Including login funciton to search and store user's own tree.
  
