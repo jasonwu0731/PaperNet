@@ -1,26 +1,34 @@
 # PaperNet
-#### This project is written in nodejs, React, mysql
+#### This project is written in nodejs, React, Webpack, mysql
 
+## Description
+ - A website to automatically construct a citation and reference tree for your query papers or keywords.
+ - Get the information of papers such as titles, authors, links, publishers, etc.
+ - Including login funciton to search and store user's own tree.
+ 
 ## Demo 
 1. Azure URL: 
 2. Youtube video: https://www.youtube.com/watch?v=pQctCIoFXV0 
 
-## Description
- - A website to automatically construct a citation and reference tree for your query concepts or papers.
- - Get the information of papers such as titles, authors, links, publishers, etc.
- - Including login funciton to search and store user's own tree.
+## Instruction
+- Login or register for an account
+- Search paper by paper title or keywords (or both), you can also set the branch and depth of the tree
+- Click "Show Tree" button and wait for your tree
+- After the tree showed, you can room in and out, move or drag the tree node
+- You can click any nodes on the tree to get more information
+- Click "Store Tree" if your want to access the tree information next time (You can see the tree in "My Trees")
 
 ## Setup 
 #### Install mysql
 1. downlaod mysql from [here](https://dev.mysql.com/downloads/)
 2. `mysql -u root -p` should be successful to login 
-3. mysql> create database YOUR_DATABASE
+3. mysql> `create database YOUR_DATABASE`
 
-#### Run 
+#### Run PaperNet Server
 1. `git clone https://github.com/jasonwu0731/PaperNet.git` 
 2. `cd PaperNet` then `npm install`
-3. `cd config` then `cp config.sample.js config.js`
-4. edit your username, password, database in config.js
+3. `cd config` then `cp config.sample.js config.json`
+4. edit your username, password, database in config.json
 ```
 {
   "development": {
@@ -32,12 +40,10 @@
   }
 }
 ```
-3. `sequelize db:migrate` to initialize the tables
-3. `npm start` to listen at localhost:3000
-4. enjoy the service
-
+5. `sequelize db:migrate` to initialize the tables
+6. `npm start` to listen at localhost:3000
 
 ## Credicts
- - This is the final project for the course Web Programming (2016 Fall), at National Taiwan University
+ - This is the final project for the course Web Programming (Ric Huang, 2016 Fall), at National Taiwan University
  - Authors: Chien-Sheng Wu, Yuan-Ting Hsieh
 
