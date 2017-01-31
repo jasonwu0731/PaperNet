@@ -16,7 +16,7 @@
 - Search paper by paper title or keywords (or both), you can also set the branch and depth of the tree
 - Click "Show Tree" button and wait for your tree
 - After the tree showed, you can room in and out, move or drag the tree node
-- You can click any nodes on the tree to get more information
+- You can click any nodes on the tree to get node information, or double-click the tree to change tree visualization
 - Click "Store Tree" if your want to access the tree information next time (You can see the tree in "My Trees")
 
 ## Setup 
