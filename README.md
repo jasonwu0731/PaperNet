@@ -21,7 +21,7 @@
 
 ## Setup 
 #### Install mysql
-1. downlaod mysql from [here](https://dev.mysql.com/downloads/)
+1. downlaod mysql [here](https://dev.mysql.com/downloads/)
 2. `mysql -u root -p` should be successful to login 
 3. mysql> `create database YOUR_DATABASE`
 
