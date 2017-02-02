@@ -2,6 +2,9 @@ import 'isomorphic-fetch';
 import React, { Component, PropTypes } from 'react';
 import PaperNetGraph from './PaperNetGraph';
 
+import ReactQuill from 'react-quill';
+import 'quill/dist/quill.snow.css';
+
 import './style.css';
 
 class SingleTreePage extends Component {
@@ -14,6 +17,8 @@ class SingleTreePage extends Component {
     this.state = {
       tree: {},
       title: '',
+      tags: [],
+      content: '',
       branch: 5,
       depth: 2,
       focusTitle: '',
@@ -23,7 +28,9 @@ class SingleTreePage extends Component {
       data: {},
       uniqTitles: [],
       pushable: [],
+      runOnce: false,
       drawing: true,
+      addNote: false, 
     };
     this.myGenNode = this.myGenNode.bind(this);
     this.focus = this.focus.bind(this);
@@ -140,6 +147,7 @@ class SingleTreePage extends Component {
       values.shadow = true;
       console.log('chose node ' + myID);
       self.focus(title);
+      self.fetchFocusContent();
     };
     return { id: myID, label: title, size: 150, color: '#FFCFCF', shape: 'box', font: { face: 'monospace', align: 'left' }, chosen: { node: myChoseNode } };
   }
@@ -154,6 +162,7 @@ class SingleTreePage extends Component {
       data: {},
       uniqTitles: [],
       pushable: [],
+      runOnce: true,
     });
   }
 
@@ -179,11 +188,14 @@ class SingleTreePage extends Component {
     this.setState({ drawing: false });
   }
 
-  renderFocusItem(title) {
+  renderFocusItem() {
     for (var i = 0; i < this.state.nodes.length; ++i) {
-      if (title===this.state.nodes[i].title) {
+      if (this.state.focusTitle===this.state.nodes[i].title) {
         const { myID, title, url, author, publisher } = this.state.nodes[i];
         const authorString = (typeof(author)==='string') ? author : author.join(', ');
+        //if (this.state.addNote === false) {
+        //  this.fetchFocusContent()
+        //}
         return (
           <div className="panel-body">
             <div>ID: {myID}</div>
@@ -191,10 +203,40 @@ class SingleTreePage extends Component {
             <div>Authors: {authorString}</div>
             <div>Publisher: {publisher}</div>
             <a href={url} target="_blank">Link to paper</a>
+            <div>Notes:</div>
+            <div
+              dangerouslySetInnerHTML={{ __html: this.state.content }}
+            />
           </div>
         );
       }
     }
+  }
+
+  fetchFocusContent() {
+    const body = {userId: this.props.user.id, paperTitle: this.state.focusTitle}
+    fetch('/api/note/getNote', {
+      headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+    .then( res => res.json() )
+    .then( json => {
+      console.log(json)
+      if(json.success === true) {
+        console.log('FIND NOTE')
+        this.setState({content: json.content})
+      } else {
+        this.setState({content: ''})
+      }
+    })
+  }
+
+  handleEditNote = () => {
+    this.setState({addNote: true})
   }
 
   renderTitle = () => {
@@ -210,6 +252,12 @@ class SingleTreePage extends Component {
     )
   }
 
+  onEditorChange = editorContent => {
+    this.setState({
+      content: editorContent,
+    });
+  }
+
   renderTree() {
     return (
       <div>
@@ -220,17 +268,51 @@ class SingleTreePage extends Component {
                 <div className="panel-heading">
                   <h3 className="panel-title">Paper Information</h3>
                 </div>
-                { this.renderFocusItem(this.state.focusTitle) }
+                { this.renderFocusItem() }
               </div>
             </div>
-          </div> ) : null }
+            {
+              (this.state.addNote === true)? (<div className="col-md-12">
+                <ReactQuill
+                  theme="snow"
+                  value={this.state.content}
+                  onChange={this.onEditorChange} />
+                <a className="btn btn-primary btn-lg" role="button" onClick={this.handleStoreNote}>Finished</a>
+              </div> ):(<a className="btn btn-primary btn-lg" role="button" onClick={this.handleEditNote}>Edit Note</a>)
+            }
+          </div> 
+          ) : null }
         <div className="row">
           <div className="col-md-12 mycanvas">
-            { this.state.drawing === false ? ( <span><PaperNetGraph graph={this.state.data} ref="graph" /></span> ) : <h3>Drawing...</h3>  }
+            { this.state.runOnce===true ? (
+                this.state.drawing === false ? ( <div className="center-block"><PaperNetGraph graph={this.state.data} ref="graph" /></div> ) : <h3>Drawing...</h3> ) : null }
           </div>
         </div>
       </div>
     );
+  }
+
+  handleStoreNote = () => {
+    const confirm = 1;//window.confirm('Are you sure to add the note？');
+    if (confirm) {
+      let body = {
+        paperTitle: this.state.focusTitle,
+        content: this.state.content,
+        userId: this.props.user.id,
+      }
+      fetch('/api/note', {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify(body),
+      }).then(result => {
+        console.log(result);
+        this.setState({addNote: false})
+        //window.location.href = '#/';
+      }).catch(err => console.log('POST failed!!'));
+    }
   }
 
   render() {

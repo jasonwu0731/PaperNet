@@ -65,6 +65,7 @@ class LoginPage extends Component {
           this.setState({
               email: '',
               password: '',
+              password2: '',
               name: '',
           });
         }

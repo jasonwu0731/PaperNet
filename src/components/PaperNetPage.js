@@ -34,6 +34,12 @@ class PaperNetPage extends Component {
     this.focus = this.focus.bind(this);
   }
 
+  componentDidUpdate() {
+    //if (this.state.addNote === false) {
+    //  this.fetchFocusContent()
+    //}
+  }
+
   focus(title) {
     this.setState({ focusTitle: title });
   }
@@ -115,6 +121,7 @@ class PaperNetPage extends Component {
       values.shadow = true;
       console.log('chose node ' + myID);
       self.focus(title);
+      self.fetchFocusContent();
     };
     return { id: myID, label: title, size: 150, color: '#FFCFCF', shape: 'box', font: { face: 'monospace', align: 'left' }, chosen: { node: myChoseNode } };
   }
@@ -237,14 +244,14 @@ class PaperNetPage extends Component {
     }
   }
 
-  renderFocusItem(title) {
+  renderFocusItem() {
     for (var i = 0; i < this.state.nodes.length; ++i) {
-      if (title===this.state.nodes[i].title) {
+      if (this.state.focusTitle===this.state.nodes[i].title) {
         const { myID, title, url, author, publisher } = this.state.nodes[i];
         const authorString = (typeof(author)==='string') ? author : author.join(', ');
-        if (this.state.addNote === false) {
-          this.fetchFocusContent()
-        }
+        //if (this.state.addNote === false) {
+        //  this.fetchFocusContent()
+        //}
         return (
           <div className="panel-body">
             <div>ID: {myID}</div>
@@ -298,7 +305,7 @@ class PaperNetPage extends Component {
                 <div className="panel-heading">
                   <h3 className="panel-title">Paper Information</h3>
                 </div>
-                { this.renderFocusItem(this.state.focusTitle) }
+                { this.renderFocusItem() }
               </div>
             </div>
             {
@@ -307,8 +314,8 @@ class PaperNetPage extends Component {
                   theme="snow"
                   value={this.state.content}
                   onChange={this.onEditorChange} />
-                <a className="btn btn-success btn-lg" role="button" onClick={this.handleStoreNote}>Store Note</a>
-              </div> ):(<a className="btn btn-success btn-lg" role="button" onClick={this.handleEditNote}>Edit Note</a>)
+                <p><a className="btn btn-primary btn-lg" role="button" onClick={this.handleStoreNote}>Finished</a></p>
+              </div> ):(<p><a className="btn btn-primary btn-lg" role="button" onClick={this.handleEditNote}>Edit Note</a></p>)
             }
           </div> 
           ) : null }
@@ -378,7 +385,7 @@ class PaperNetPage extends Component {
   }
 
   handleStoreNote = () => {
-    const confirm = window.confirm('Are you sure to add the note？');
+    const confirm = 1;//window.confirm('Are you sure to add the note？');
     if (confirm) {
       let body = {
         paperTitle: this.state.focusTitle,
@@ -394,7 +401,7 @@ class PaperNetPage extends Component {
         body: JSON.stringify(body),
       }).then(result => {
         console.log(result);
-        this.setState({addNote: false, content: ''})
+        this.setState({addNote: false})
         //window.location.href = '#/';
       }).catch(err => console.log('POST failed!!'));
     }

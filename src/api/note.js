@@ -8,15 +8,42 @@ const noteRouter = new Router();
 
 noteRouter.post('/', async(req, res) => {
   const {userId, paperTitle, content} = req.body;
+  /*try{
+    const note_userId = await Note.findOne({
+      paperTitle,
+      userId,
+    });
 
-  const note_userId = await Note.create({
-  	content,
-    paperTitle,
-    userId,
-  });
-  console.log('create note')
-  //console.log('Create note_userId: ', note_userId);
-  res.send(note_userId)
+    console.log('api/note FIND NOTE!')
+
+    await Note.update({
+      content,
+    }, {
+      where: {
+        paperTitle,
+        userId,
+      },
+    });
+    res.send(note_userId)
+
+  } catch(err) {*/
+    await Note.destroy({
+      where: {
+        userId,
+        paperTitle,
+      },
+    });
+    console.log('api/note destroy note')
+    
+    const note_userId = await Note.create({
+      content,
+      paperTitle,
+      userId,
+    });
+    console.log('api/note create note')
+    //console.log('Create note_userId: ', note_userId);
+    res.send(note_userId)
+  //}
 }) 
 
 noteRouter.post('/getNote', async(req, res) => {
