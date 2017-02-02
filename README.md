@@ -5,7 +5,7 @@
  - A website to automatically construct a citation and reference tree for your query papers or keywords.
  - Get the tree structure that **References --> Paper --> Citations**
  - Get the information of papers such as titles, authors, links, publishers, etc.
- - Including login funciton to search and store user's own tree.
+ - Including login funciton to store user's trees and notes.
  
 ## Demo 
 1. Azure URL: 
@@ -15,9 +15,10 @@
 - Login or register for an account
 - Search paper by paper title or keywords (or both), you can also set the branch and depth of the tree
 - Click "Show Tree" button and wait for your tree
-- After the tree showed, you can room in and out, move or drag the tree node
-- You can click any nodes on the tree to get node information, or double-click the tree to change tree visualization
-- Click "Store Tree" if your want to access the tree information next time (You can see the tree in "My Trees")
+- Room in and out, move or drag the tree node after tree showed
+- Click any nodes on the tree to get node information, or double-click the tree to change tree visualization
+- Edit and store your own note of each paper eyerywhere
+- Click "Store Tree" if your want to access the tree information next time (You can view, edit or delete them in "My Trees")
 
 ## Setup 
 #### Install mysql
