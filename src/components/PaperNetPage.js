@@ -4,6 +4,8 @@ import Request from "request";
 import cheerio from "cheerio";
 import TagsInput from 'react-tagsinput';
 import 'react-tagsinput/react-tagsinput.css';
+import ReactQuill from 'react-quill';
+import 'quill/dist/quill.snow.css';
 
 import PaperNetGraph from './PaperNetGraph';
 
@@ -14,6 +16,7 @@ class PaperNetPage extends Component {
       tree: {},
       title: '',
       tags: [],
+      content: '',
       branch: 5,
       depth: 2,
       focusTitle: '',
@@ -25,6 +28,7 @@ class PaperNetPage extends Component {
       pushable: [],
       runOnce: false,
       drawing: true,
+      addNote: false, 
     };
     this.myGenNode = this.myGenNode.bind(this);
     this.focus = this.focus.bind(this);
@@ -134,6 +138,11 @@ class PaperNetPage extends Component {
     this.setState({ tags });
   }
 
+  onEditorChange = editorContent => {
+    this.setState({
+      content: editorContent,
+    });
+  }
 
   handleTree = () => {
     //console.log(this.state.title)
@@ -233,6 +242,9 @@ class PaperNetPage extends Component {
       if (title===this.state.nodes[i].title) {
         const { myID, title, url, author, publisher } = this.state.nodes[i];
         const authorString = (typeof(author)==='string') ? author : author.join(', ');
+        if (this.state.addNote === false) {
+          this.fetchFocusContent()
+        }
         return (
           <div className="panel-body">
             <div>ID: {myID}</div>
@@ -240,10 +252,40 @@ class PaperNetPage extends Component {
             <div>Authors: {authorString}</div>
             <div>Publisher: {publisher}</div>
             <a href={url} target="_blank">Link to paper</a>
+            <div>Notes:</div>
+            <div
+              dangerouslySetInnerHTML={{ __html: this.state.content }}
+            />
           </div>
         );
       }
     }
+  }
+
+  fetchFocusContent() {
+    const body = {userId: this.props.user.id, paperTitle: this.state.focusTitle}
+    fetch('/api/note/getNote', {
+      headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+    .then( res => res.json() )
+    .then( json => {
+      console.log(json)
+      if(json.success === true) {
+        console.log('FIND NOTE')
+        this.setState({content: json.content})
+      } else {
+        this.setState({content: ''})
+      }
+    })
+  }
+
+  handleEditNote = () => {
+    this.setState({addNote: true})
   }
 
   renderTree() {
@@ -259,6 +301,15 @@ class PaperNetPage extends Component {
                 { this.renderFocusItem(this.state.focusTitle) }
               </div>
             </div>
+            {
+              (this.state.addNote === true)? (<div className="col-md-12">
+                <ReactQuill
+                  theme="snow"
+                  value={this.state.content}
+                  onChange={this.onEditorChange} />
+                <a className="btn btn-success btn-lg" role="button" onClick={this.handleStoreNote}>Store Note</a>
+              </div> ):(<a className="btn btn-success btn-lg" role="button" onClick={this.handleEditNote}>Edit Note</a>)
+            }
           </div> 
           ) : null }
         <div className="row">
@@ -325,6 +376,29 @@ class PaperNetPage extends Component {
       }
     }
   }
+
+  handleStoreNote = () => {
+    const confirm = window.confirm('Are you sure to add the note？');
+    if (confirm) {
+      let body = {
+        paperTitle: this.state.focusTitle,
+        content: this.state.content,
+        userId: this.props.user.id,
+      }
+      fetch('/api/note', {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify(body),
+      }).then(result => {
+        console.log(result);
+        this.setState({addNote: false, content: ''})
+        //window.location.href = '#/';
+      }).catch(err => console.log('POST failed!!'));
+    }
+  }
   
   render() {
     return (
@@ -337,7 +411,7 @@ class PaperNetPage extends Component {
               <input
                 type="text"
                 className="form-control"
-                placeholder="ex: Mastering the game of Go with deep neural networks and tree search, #deep learning, etc."
+                placeholder="ex: Mastering the game of Go with deep neural networks and tree search"
                 aria-describedby="article-title"
                 value={this.state.title}
                 onChange={this.handleTitleChange}

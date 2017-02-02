@@ -409,11 +409,11 @@ function _forward(paper, branchFactor,callback) {
         update_bf = Math.min(kk.children.length-article_start, branchFactor)
       }
       //console.log('paper', paper.title, 'update_bf', update_bf)
-
+      //console.log(kk.children[article_start].children[0].children[0])
       for (let i = 0; i<update_bf ; i++) {
-        if (kk.children[article_start+i].children[0].children[1].name == 'a' ){
+        if (kk.children[article_start+i].children[0].children[0].name == 'a' ){
           //authors
-          let uu = kk.children[article_start+i].children[0].children[2].children[0].children[0]
+          let uu = kk.children[article_start+i].children[0].children[1].children[0].children[0]
           let authors_temp = []
           if (uu.children.length > 6) {
             for (let i = 0 ; i< 6 ; i++) {
@@ -435,7 +435,7 @@ function _forward(paper, branchFactor,callback) {
           //publisher
           let publisher_temp = ''
           //console.log('TEST',$(".paper-detail-content-section")[1].children[3].children[0].children[2])
-          let qq = kk.children[article_start+i].children[0].children[2]
+          let qq = kk.children[article_start+i].children[0].children[1]
           //console.log('TEST', qq.children[2])
           if (qq.children.length >= 2) {
             if (qq.children[1].attribs.class == 'venue-metadata') {
@@ -451,10 +451,10 @@ function _forward(paper, branchFactor,callback) {
             //console.log('publisher', publisher)
           }
 
-          const urlRef = kk.children[article_start+i].children[0].children[1].attribs.href
+          const urlRef = kk.children[article_start+i].children[0].children[0].attribs.href
           //let temp = urlRef.split('paper/')[1].split('/')[0].split('-')
           let ref = {
-            title: kk.children[article_start+i].children[0].children[1].children[0].children[0].children[0].children[0].data,
+            title: kk.children[article_start+i].children[0].children[0].children[0].children[0].children[0].children[0].data,
             author: authors_temp, //temp[temp.length-2]+" "+temp[temp.length-1],
             url: 'https://www.semanticscholar.org' + urlRef,
             publisher: publisher_temp,
@@ -520,9 +520,9 @@ function _backward(paper,branchFactor, callback) {
           //console.log($(".paper-detail-content-section")[0])
           let uu
           if ($(".paper-detail-content-section")[0].children[2+i].name == 'article')
-            uu = $(".paper-detail-content-section")[0].children[2+i].children[0].children[2].children[0].children[0]
+            uu = $(".paper-detail-content-section")[0].children[2+i].children[0].children[1].children[0].children[0]
           else
-            uu = $(".paper-detail-content-section")[0].children[3+i].children[0].children[2].children[0].children[0]
+            uu = $(".paper-detail-content-section")[0].children[3+i].children[0].children[1].children[0].children[0]
           let authors_temp = []
           if (uu.children.length > 6) {
             for (let i = 0 ; i< 6 ; i++) {
@@ -545,9 +545,9 @@ function _backward(paper,branchFactor, callback) {
           //console.log('TEST',$(".paper-detail-content-section")[1].children[3].children[0].children[2])
           let qq 
           if ($(".paper-detail-content-section")[0].children[2+i].name == 'article')
-            qq = $(".paper-detail-content-section")[0].children[2+i].children[0].children[2]
+            qq = $(".paper-detail-content-section")[0].children[2+i].children[0].children[1]
           else
-            qq = $(".paper-detail-content-section")[0].children[3+i].children[0].children[2]
+            qq = $(".paper-detail-content-section")[0].children[3+i].children[0].children[1]
           //console.log('TEST', qq.children[2])
           if (qq.children.length >= 2) {
             if (qq.children[1].attribs.class == 'venue-metadata') {
