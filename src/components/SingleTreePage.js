@@ -120,7 +120,7 @@ class SingleTreePage extends Component {
     if (parent.length > 0) {
       for (var i = 0; i < parent.length; i++) {
         //myEdges = [...myEdges, { from: titleToID[title], to: titleToID[parent[i].title] }];
-        this.setState({ edges: [...this.state.edges, { from: titleToID[title], to: titleToID[parent[i].title] }] });
+        this.setState({ edges: [...this.state.edges, { from: titleToID[parent[i].title], to: titleToID[title] }] });
         console.log('adding edge from id ' + titleToID[title] + ' to id ' + titleToID[parent[i].title]);
         this.treeToEdge(parent[i]);
       }
@@ -129,7 +129,7 @@ class SingleTreePage extends Component {
     if (children.length > 0) {
       for (var j = 0; j < children.length; j++) {
         //myEdges = [...myEdges, { to: titleToID[title], from: titleToID[children[j].title] }];
-        this.setState({ edges: [...this.state.edges, { to: titleToID[title], from: titleToID[children[j].title] }] });
+        this.setState({ edges: [...this.state.edges, { to: titleToID[children[j].title], from: titleToID[title] }] });
         console.log('adding edge from id ' + titleToID[children[j].title] + ' to id ' + titleToID[title]);
         this.treeToEdge(children[j]);
       }

@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import HomePage from './HomePage';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
-import ArticlesPage from './ArticlesPage';
-import SingleArticlePage from './SingleArticlePage';
-import CreateArticlePage from './CreateArticlePage';
+//import ArticlesPage from './ArticlesPage';
+//import SingleArticlePage from './SingleArticlePage';
+//import CreateArticlePage from './CreateArticlePage';
 
 import PaperNetPage from './PaperNetPage';
 import TreesPage from './TreesPage';
