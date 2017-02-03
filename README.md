@@ -2,22 +2,23 @@
 #### This project is written in nodejs, React, Webpack, mysql
 
 ## Description
- - A website to automatically construct a citation and reference tree for your query papers or keywords.
- - Get the tree structure that **References --> Paper --> Citations**
+ - Automatically retrieving the referred and cited papers for your query papers or keywords.
+ - Visualizing the structure via a directed graph where edges stand for citing relations
+   - Direction of edges follow that **References --> Paper --> Citations**
  - Get the information of papers such as titles, authors, links, publishers, etc.
- - Including login funciton to store user's trees and notes.
+ - Easy register and login interface that enables the saving and reloading of your created trees and notes
  
 ## Demo 
 1. Azure URL: 
 2. Youtube video: https://www.youtube.com/watch?v=pQctCIoFXV0 
 
 ## Instruction
-- Login or register for an account
+- Login or register an account
 - Search paper by paper title or keywords (or both), you can also set the branch and depth of the tree
-- Click "Show Tree" button and wait for your tree
+- Click "Show Tree" button and wait for the drawing process
 - Room in and out, move or drag the tree node after tree showed
 - Click any nodes on the tree to get node information, or double-click the tree to change tree visualization
-- Edit and store your own note of each paper eyerywhere
+- Edit and store your own note of each paper everywhere
 - Click "Store Tree" if your want to access the tree information next time (You can view, edit or delete them in "My Trees")
 
 ## Setup 
